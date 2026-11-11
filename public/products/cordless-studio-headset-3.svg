@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img" aria-label="Cordless Studio Headset">
+  <defs>
+    <linearGradient id="g" gradientTransform="rotate(13 .5 .5)">
+      <stop offset="0%" stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#g)"/>
+  <circle cx="13" cy="29" r="25" fill="#ffffff" fill-opacity="0.07" /><circle cx="36" cy="52" r="22" fill="#ffffff" fill-opacity="0.07" /><circle cx="59" cy="75" r="19" fill="#ffffff" fill-opacity="0.07" /><circle cx="82" cy="98" r="42" fill="#ffffff" fill-opacity="0.07" /><circle cx="105" cy="21" r="39" fill="#ffffff" fill-opacity="0.07" />
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="3">
+    <circle cx="400" cy="360" r="134"/>
+    <circle cx="400" cy="360" r="194" stroke-opacity="0.15"/>
+  </g>
+  <text x="400" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="150" font-weight="700" fill="#ffffff" fill-opacity="0.92" text-anchor="middle">CS</text>
+  <text x="400" y="620" font-family="Segoe UI, Arial, sans-serif" font-size="34" letter-spacing="6" fill="#ffffff" fill-opacity="0.85" text-anchor="middle">VIEW 3</text>
+  <text x="400" y="672" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#ffffff" fill-opacity="0.6" text-anchor="middle">AUREX</text>
+</svg>

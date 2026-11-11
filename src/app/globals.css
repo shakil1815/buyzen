@@ -1,26 +1,197 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #d9e6ff;
+  --color-brand-200: #bcd3ff;
+  --color-brand-300: #8eb7ff;
+  --color-brand-400: #598eff;
+  --color-brand-500: #3366ff;
+  --color-brand-600: #1f43f5;
+  --color-brand-700: #1731e1;
+  --color-brand-800: #1929b6;
+  --color-brand-900: #1b2b8f;
+  --color-brand-950: #111a53;
+
+  --color-ink-50: #f6f7f9;
+  --color-ink-100: #eceef2;
+  --color-ink-200: #d5dae3;
+  --color-ink-300: #b1bbcb;
+  --color-ink-400: #8695ac;
+  --color-ink-500: #687794;
+  --color-ink-600: #545f7a;
+  --color-ink-700: #464d63;
+  --color-ink-800: #3d4354;
+  --color-ink-900: #363b48;
+  --color-ink-950: #22252e;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --shadow-soft: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 24px -12px rgb(16 24 40 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(16 24 40 / 0.04), 0 18px 40px -16px rgb(16 24 40 / 0.28);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: #ffffff;
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-200);
+    color: var(--color-brand-950);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 84rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1;
+    padding: 0.75rem 1.15rem;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      transform 150ms ease,
+      box-shadow 150ms ease;
+    cursor: pointer;
+  }
+
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background-color: var(--color-brand-600);
+    color: white;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-brand-700);
+    transform: translateY(-1px);
+  }
+
+  .btn-dark {
+    background-color: var(--color-ink-950);
+    color: white;
+  }
+
+  .btn-dark:hover:not(:disabled) {
+    background-color: var(--color-ink-800);
+  }
+
+  .btn-outline {
+    border: 1px solid var(--color-ink-200);
+    color: var(--color-ink-800);
+    background-color: white;
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    border-color: var(--color-ink-400);
+    background-color: var(--color-ink-50);
+  }
+
+  .btn-ghost {
+    color: var(--color-ink-600);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--color-ink-100);
+    color: var(--color-ink-900);
+  }
+
+  .input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-ink-200);
+    background-color: white;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-900);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--color-brand-500);
+    box-shadow: 0 0 0 3px rgb(51 102 255 / 0.15);
+  }
+
+  .label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-ink-700);
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.01em;
+  }
+
+  .card {
+    border-radius: 1rem;
+    border: 1px solid var(--color-ink-100);
+    background-color: white;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-ink-100) 25%,
+      var(--color-ink-50) 37%,
+      var(--color-ink-100) 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0 50%;
+    }
+  }
 }

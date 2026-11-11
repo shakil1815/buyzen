@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img" aria-label="Glide Wireless Mouse">
+  <defs>
+    <linearGradient id="g" gradientTransform="rotate(262 .5 .5)">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f43f5e"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#g)"/>
+  <circle cx="104" cy="108" r="36" fill="#ffffff" fill-opacity="0.07" /><circle cx="24" cy="28" r="30" fill="#ffffff" fill-opacity="0.07" /><circle cx="44" cy="48" r="24" fill="#ffffff" fill-opacity="0.07" /><circle cx="64" cy="68" r="18" fill="#ffffff" fill-opacity="0.07" /><circle cx="84" cy="88" r="38" fill="#ffffff" fill-opacity="0.07" />
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="3">
+    <circle cx="400" cy="360" r="134"/>
+    <circle cx="400" cy="360" r="194" stroke-opacity="0.15"/>
+  </g>
+  <text x="400" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="150" font-weight="700" fill="#ffffff" fill-opacity="0.92" text-anchor="middle">GW</text>
+  <text x="400" y="620" font-family="Segoe UI, Arial, sans-serif" font-size="34" letter-spacing="6" fill="#ffffff" fill-opacity="0.85" text-anchor="middle">VIEW 3</text>
+  <text x="400" y="672" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#ffffff" fill-opacity="0.6" text-anchor="middle">GLIDE</text>
+</svg>

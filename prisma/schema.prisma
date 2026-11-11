@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// NOTE: SQLite does not support enums in Prisma, so status-like fields are
+// stored as strings with the allowed values documented next to them.
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  passwordHash String
+  name         String
+  // "CUSTOMER" | "ADMIN"
+  role         String         @default("CUSTOMER")
+  createdAt    DateTime       @default(now())
+  orders       Order[]
+  reviews      Review[]
+  wishlist     WishlistItem[]
+  carts        Cart[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  products    Product[]
+}
+
+model Product {
+  id             String         @id @default(cuid())
+  name           String
+  slug           String         @unique
+  description    String
+  // price + compareAtPrice are stored in cents
+  price          Int
+  compareAtPrice Int?
+  sku            String         @unique
+  brand          String?
+  image          String
+  gallery        String         @default("[]")
+  stock          Int            @default(0)
+  featured       Boolean        @default(false)
+  rating         Float          @default(0)
+  reviewCount    Int            @default(0)
+  categoryId     String
+  category       Category       @relation(fields: [categoryId], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  reviews        Review[]
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  wishlistItems  WishlistItem[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  title     String
+  body      String
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([productId, userId])
+}
+
+model Cart {
+  id         String     @id @default(cuid())
+  sessionId  String?    @unique
+  userId     String?
+  couponCode String?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items      CartItem[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  number       String      @unique
+  userId       String?
+  user         User?       @relation(fields: [userId], references: [id])
+  email        String
+  shippingName String
+  address1     String
+  address2     String?
+  city         String
+  state        String?
+  postalCode   String
+  country      String
+  phone        String?
+  subtotal     Int
+  discount     Int         @default(0)
+  shipping     Int         @default(0)
+  tax          Int         @default(0)
+  total        Int
+  couponCode   String?
+  // "PENDING" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
+  status       String      @default("PAID")
+  paymentMethod String     @default("card")
+  paymentRef   String?
+  notes        String?
+  createdAt    DateTime    @default(now())
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name      String
+  slug      String
+  image     String
+  price     Int
+  quantity  Int
+}
+
+model Coupon {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  // "PERCENT" | "FIXED"
+  type        String    @default("PERCENT")
+  // percent points for PERCENT, cents for FIXED
+  value       Int
+  minSubtotal Int       @default(0)
+  description String?
+  active      Boolean   @default(true)
+  expiresAt   DateTime?
+  usageLimit  Int?
+  usedCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
