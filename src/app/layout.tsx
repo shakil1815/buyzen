@@ -4,6 +4,11 @@ import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ChatWidget } from "@/components/chat-widget";
+import { I18nProvider } from "@/components/i18n-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { getCurrency, getTheme } from "@/lib/settings";
+import { usdToBdtRate } from "@/lib/currency";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,18 +46,42 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+/** Applies the saved theme before first paint to avoid a flash. */
+const themeScript = `(function(){try{var c=document.cookie.split(';').map(function(p){return p.trim()}).find(function(p){return p.indexOf('sf_theme=')===0});var v=c?c.split('=')[1]:'system';var d=v==='dark'||(v==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const [locale, dictionary, currency, theme] = await Promise.all([
+    getLocale(),
+    getDictionary(),
+    getCurrency(),
+    getTheme(),
+  ]);
+
   return (
     <html
-      lang="en"
+      lang={locale}
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased ${
+        theme === "dark" ? "dark" : ""
+      }`}
     >
-      <body className="flex min-h-full flex-col bg-white">
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
-        <ChatWidget />
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="flex min-h-full flex-col bg-surface text-fg">
+        <ThemeProvider initialTheme={theme}>
+          <I18nProvider
+            locale={locale}
+            dictionary={dictionary}
+            currency={currency}
+            usdToBdt={usdToBdtRate()}
+          >
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+            <ChatWidget />
+          </I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

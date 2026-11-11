@@ -3,8 +3,10 @@
 import { useActionState } from "react";
 import { Check, Send } from "lucide-react";
 import { subscribeAction } from "@/lib/actions/reviews";
+import { useI18n } from "@/components/i18n-provider";
 
 export function NewsletterForm() {
+  const { t } = useI18n();
   const [state, formAction, pending] = useActionState(subscribeAction, {});
 
   return (
@@ -18,7 +20,7 @@ export function NewsletterForm() {
           name="email"
           type="email"
           required
-          placeholder="you@example.com"
+          placeholder={t("footer.emailPlaceholder")}
           className="input flex-1"
         />
         <button
@@ -26,20 +28,20 @@ export function NewsletterForm() {
           disabled={pending}
           className="btn btn-primary shrink-0"
         >
-          {pending ? "Joining…" : "Subscribe"}
+          {pending ? t("footer.subscribing") : t("footer.subscribe")}
           <Send className="h-4 w-4" />
         </button>
       </div>
       {state.error ? (
-        <p className="mt-2 text-xs font-medium text-rose-600">{state.error}</p>
+        <p className="mt-2 text-xs font-medium text-danger-fg">{state.error}</p>
       ) : null}
       {state.success ? (
-        <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+        <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-success-fg">
           <Check className="h-3.5 w-3.5" /> {state.success}
         </p>
       ) : null}
-      <p className="mt-2 text-xs text-ink-400">
-        Weekly drops, members-only codes. Unsubscribe any time.
+      <p className="mt-2 text-xs text-fg-subtle">
+        {t("footer.subscribeNote")}
       </p>
     </form>
   );

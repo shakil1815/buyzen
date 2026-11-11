@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toggleWishlistAction } from "@/lib/actions/cart";
+import { useI18n } from "@/components/i18n-provider";
 
 export function WishlistButton({
   productId,
@@ -16,6 +17,7 @@ export function WishlistButton({
   saved: boolean;
   className?: string;
 }) {
+  const { t } = useI18n();
   const [isSaved, setIsSaved] = useState(saved);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -38,9 +40,9 @@ export function WishlistButton({
       onClick={toggle}
       disabled={pending}
       aria-pressed={isSaved}
-      aria-label={isSaved ? "Remove from wishlist" : "Save to wishlist"}
-      title={isSaved ? "Remove from wishlist" : "Save to wishlist"}
-      className={`rounded-lg border border-ink-200 bg-white p-2 text-ink-500 transition hover:border-ink-300 hover:text-ink-800 disabled:opacity-60 ${className}`}
+      aria-label={isSaved ? t("product.unsave") : t("product.save")}
+      title={isSaved ? t("product.unsave") : t("product.save")}
+      className={`rounded-lg border border-line-strong bg-surface p-2 text-fg-muted transition hover:border-line-strong hover:text-fg disabled:opacity-60 ${className}`}
     >
       <Heart
         className={`h-4 w-4 ${isSaved ? "fill-rose-500 text-rose-500" : ""}`}

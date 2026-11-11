@@ -6,6 +6,10 @@ It includes the full shopping journey (browse → search → cart → promo code
 checkout → order), customer accounts, an admin back office, marketing extras, and a
 catalog-aware AI shopping assistant.
 
+**Built for a Bangladesh audience out of the box:** full **বাংলা (Bangla)** interface,
+**BDT (৳ Taka)** pricing alongside USD, and a **Light / Dark / Default( System)** theme
+switcher — all switchable from the header without a page reload.
+
 ```
 C:\Users\shaki\ecommerce-store
 ```
@@ -47,11 +51,35 @@ reviews and coupon codes.
 | `npm run e2e`          | Browser test of the shopping journey                       |
 | `npm run e2e:account`  | Browser test of the account journey                        |
 | `npm run e2e:admin`    | Browser test of the admin CRUD flow                        |
+| `npm run e2e:i18n`     | Browser test of language, currency and theme switching     |
 | `npm run screenshots`  | Save screenshots of the main pages to `screenshots/`       |
 
 ---
 
 ## Feature tour
+
+### Bangladesh localisation (Bangla + Taka)
+- **বাংলা (Bangla) interface** — every page, component and form is translated
+  (catalogue, product pages, cart, checkout, account area, admin back office, help
+  centre, emails/messages). Product *names* stay in English, the way real
+  Bangladeshi stores list imported electronics.
+- **BDT (৳ Taka)** — switch the currency from the header and every price, cart
+  total, invoice line and AI reply converts to Taka using the lakh-style grouping
+  used in Bangladesh (`৳33,480`). Prices are stored in USD cents and converted for
+  display, so the catalogue stays currency-agnostic.
+- **Bangla AI assistant** — the chat widget replies in Bangla (including product
+  searches in Banglish) and quotes prices in ৳.
+- **Checkout** — Bangladesh is the default country, with all other markets one
+  click away.
+
+### Theme switcher (Light / Dark / Default)
+- Three modes in the header settings panel: **Light**, **Dark** and
+  **Default (System)** which follows the operating system preference.
+- Implemented with semantic design tokens (`--surface`, `--fg`, `--line`,
+  `--brand-soft`, success/warn/danger tokens) that flip at runtime, so every card,
+  table, badge, input and shadow re-themes automatically.
+- The choice is stored in a cookie and applied by an inline script **before first
+  paint**, so there is no flash of the wrong theme.
 
 ### Storefront
 - **Home** — hero, category grid, featured products, today's deals, highest rated
@@ -111,20 +139,31 @@ prisma/
   seed.mts             # demo data + generated SVG artwork in public/products
 src/
   app/                 # App Router pages, layouts, route handlers
-    api/chat           # AI assistant endpoint
+    api/chat           # AI assistant endpoint (locale + currency aware)
     api/search         # header search suggestions
     api/webhooks/stripe# Stripe webhook (marks orders paid)
   components/          # UI components (server + client)
   lib/
     cart.ts            # cart persistence, totals, shipping/tax rules
     session.ts         # JWT session cookie helpers
-    chatbot.ts         # assistant engine (local + OpenAI)
-    actions/           # server actions (auth, cart, checkout, reviews, admin)
-scripts/               # playwright smoke tests + screenshot tool
+    chatbot.ts         # assistant engine (local + OpenAI, EN + BN)
+    currency.ts        # USD/BDT conversion helpers
+    i18n/              # dictionaries (en/bn), server helpers, interpolation
+    settings.ts        # locale / currency / theme cookie helpers
+    actions/           # server actions (auth, cart, checkout, reviews, admin, settings)
+scripts/               # playwright smoke tests + screenshot tools
 ```
 
-**Money** is stored in integer cents everywhere; formatting happens only at the
-edge (`src/lib/format.ts`).
+**Money** is stored in integer cents (USD) everywhere; formatting and the
+USD → BDT conversion happen only at the edge (`src/lib/format.ts`).
+
+**Localisation** uses a typed dictionary (`src/lib/i18n/dictionaries.ts`) where the
+Bangla file is checked against the English keys at compile time, so a missing
+translation fails the build. Server components read it with `getT()`, client
+components with `useI18n()`.
+
+**Themes** are driven by semantic CSS variables in `src/app/globals.css`; the
+palette flips through a `.dark` class on `<html>`.
 
 **Mutations** all go through server actions (`"use server"`), so validation happens
 server-side with Zod and the UI stays thin.
@@ -143,10 +182,14 @@ Copy `.env.example` to `.env` and adjust:
 | `DATABASE_URL`              | yes      | SQLite file (`file:./dev.db`) or a hosted Postgres URL      |
 | `AUTH_SECRET`               | yes      | Secret used to sign session cookies                          |
 | `NEXT_PUBLIC_SITE_URL`      | no       | Canonical URL for metadata, sitemap and Stripe redirects     |
+| `USD_TO_BDT_RATE`           | no       | Taka rate for USD prices (default `120`)                    |
 | `OPENAI_API_KEY`            | no       | Enables the hosted AI assistant (falls back to the local one)|
 | `OPENAI_MODEL`              | no       | Model id, defaults to `gpt-4o-mini`                          |
 | `STRIPE_SECRET_KEY`         | no       | Enables Stripe Checkout instead of the built-in card form    |
 | `STRIPE_WEBHOOK_SECRET`     | no       | Verifies `/api/webhooks/stripe` payloads                     |
+
+The locale (`sf_locale`), currency (`sf_currency`) and theme (`sf_theme`) are stored
+in first-party cookies and can be changed from the header settings panel.
 
 ### Payments
 The built-in checkout validates card numbers with a Luhn check and expiry/CVC
@@ -176,10 +219,11 @@ npm run dev          # in one terminal
 npm run e2e          # browse → add to cart → promo code → checkout → admin
 npm run e2e:account  # register → wishlist → review → order → history → newsletter
 npm run e2e:admin    # sign in → create product → edit → delete → coupons/orders/customers
+npm run e2e:i18n     # English/Bangla · USD/BDT · light/dark switching
 ```
 
-All three suites currently pass **11/11**, **7/7** and **6/6** checks with zero
-console errors.
+All four suites currently pass **11/11**, **7/7**, **6/6** and **8/8** checks with
+zero console errors.
 
 ---
 

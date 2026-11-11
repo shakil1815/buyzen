@@ -7,6 +7,7 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { removeItemAction, updateItemAction } from "@/lib/actions/cart";
 import { formatMoney } from "@/lib/format";
+import { useI18n } from "@/components/i18n-provider";
 
 export function CartLineItem({
   item,
@@ -23,6 +24,7 @@ export function CartLineItem({
     };
   };
 }) {
+  const { t, currency, usdToBdt } = useI18n();
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -42,11 +44,11 @@ export function CartLineItem({
 
   return (
     <div
-      className={`flex gap-4 border-b border-ink-100 py-5 last:border-0 ${pending ? "opacity-60" : ""}`}
+      className={`flex gap-4 border-b border-line py-5 last:border-0 ${pending ? "opacity-60" : ""}`}
     >
       <Link
         href={`/products/${item.product.slug}`}
-        className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-ink-50"
+        className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-surface-2"
       >
         <Image
           src={item.product.image}
@@ -61,26 +63,28 @@ export function CartLineItem({
         <div className="flex items-start justify-between gap-3">
           <Link
             href={`/products/${item.product.slug}`}
-            className="text-sm font-semibold text-ink-900 hover:text-brand-600"
+            className="text-sm font-semibold text-fg hover:text-brand-fg"
           >
             {item.product.name}
           </Link>
-          <p className="shrink-0 text-sm font-bold text-ink-950">
-            {formatMoney(item.product.price * item.quantity)}
+          <p className="shrink-0 text-sm font-bold text-fg-strong">
+            {formatMoney(item.product.price * item.quantity, currency, usdToBdt)}
           </p>
         </div>
 
-        <p className="mt-1 text-xs text-ink-500">
-          {formatMoney(item.product.price)} each
+        <p className="mt-1 text-xs text-fg-muted">
+          {t("cart.each", {
+            price: formatMoney(item.product.price, currency, usdToBdt),
+          })}
         </p>
 
         <div className="mt-auto flex items-center justify-between pt-3">
-          <div className="flex items-center rounded-lg border border-ink-200">
+          <div className="flex items-center rounded-lg border border-line-strong">
             <button
               type="button"
               onClick={() => setQuantity(item.quantity - 1)}
-              className="px-3 py-1.5 text-base leading-none text-ink-500 transition hover:text-ink-900"
-              aria-label="Decrease quantity"
+              className="px-3 py-1.5 text-base leading-none text-fg-muted transition hover:text-fg-strong"
+              aria-label={t("cart.decrease")}
             >
               −
             </button>
@@ -91,8 +95,8 @@ export function CartLineItem({
               type="button"
               onClick={() => setQuantity(item.quantity + 1)}
               disabled={item.quantity >= item.product.stock}
-              className="px-3 py-1.5 text-base leading-none text-ink-500 transition hover:text-ink-900 disabled:opacity-40"
-              aria-label="Increase quantity"
+              className="px-3 py-1.5 text-base leading-none text-fg-muted transition hover:text-fg-strong disabled:opacity-40"
+              aria-label={t("cart.increase")}
             >
               +
             </button>
@@ -101,9 +105,9 @@ export function CartLineItem({
           <button
             type="button"
             onClick={remove}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-400 transition hover:text-rose-600"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-fg-subtle transition hover:text-danger-fg"
           >
-            <Trash2 className="h-3.5 w-3.5" /> Remove
+            <Trash2 className="h-3.5 w-3.5" /> {t("cart.removeItem")}
           </button>
         </div>
       </div>

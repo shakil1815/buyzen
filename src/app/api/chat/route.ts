@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { answerQuestion } from "@/lib/chatbot";
+import type { Currency } from "@/lib/currency";
 
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
       message?: string;
       history?: { role: "user" | "assistant"; content: string }[];
+      locale?: "en" | "bn";
+      currency?: Currency;
+      rate?: number;
     };
 
     const message = (body.message ?? "").slice(0, 1000);
@@ -16,7 +20,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const reply = await answerQuestion(message, body.history ?? []);
+    const reply = await answerQuestion(message, body.history ?? [], {
+      locale: body.locale,
+      currency: body.currency,
+      rate: body.rate,
+    });
     return NextResponse.json(reply);
   } catch (error) {
     console.error("chat error", error);

@@ -15,7 +15,7 @@ export function ProductGallery({
 
   return (
     <div className="grid gap-4">
-      <div className="relative aspect-square overflow-hidden rounded-2xl border border-ink-100 bg-ink-50">
+      <div className="relative aspect-square overflow-hidden rounded-2xl border border-line bg-surface-2">
         <Image
           src={list[active]}
           alt={alt}
@@ -35,7 +35,7 @@ export function ProductGallery({
               className={`relative h-20 w-20 overflow-hidden rounded-xl border transition ${
                 active === index
                   ? "border-brand-600 ring-2 ring-brand-200"
-                  : "border-ink-100 hover:border-ink-300"
+                  : "border-line hover:border-line-strong"
               }`}
               aria-label={`View image ${index + 1}`}
             >

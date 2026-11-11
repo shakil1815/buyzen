@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { ProductCard, type ProductCardData } from "@/components/product-card";
 import { ProductFilters, SortSelect } from "@/components/product-filters";
+import { categoryLabel, getT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Shop all products",
@@ -21,6 +22,7 @@ function first(value: string | string[] | undefined) {
 
 export default async function ProductsPage(props: PageProps<"/products">) {
   const searchParams = (await props.searchParams) as SearchParams;
+  const t = await getT();
 
   const query = first(searchParams.q).trim();
   const category = first(searchParams.category).trim();
@@ -83,31 +85,31 @@ export default async function ProductsPage(props: PageProps<"/products">) {
   const savedIds = new Set(savedItems.map((item) => item.productId));
 
   const heading = query
-    ? `Results for “${query}”`
+    ? t("products.searchTitle", { query })
     : category
-      ? (categories.find((item) => item.slug === category)?.name ?? "Products")
+      ? categoryLabel(t, category, categories.find((item) => item.slug === category)?.name ?? category)
       : deals
-        ? "Today's deals"
-        : "All products";
+        ? t("nav.deals")
+        : t("products.title");
 
   return (
     <div className="container-page py-10">
-      <nav className="flex items-center gap-2 text-xs text-ink-500">
-        <Link href="/" className="hover:text-brand-600">
-          Home
+      <nav className="flex items-center gap-2 text-xs text-fg-muted">
+        <Link href="/" className="hover:text-brand-fg">
+          {t("common.home")}
         </Link>
         <span>/</span>
-        <span className="text-ink-800">{heading}</span>
+        <span className="text-fg">{heading}</span>
       </nav>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-ink-950">
+          <h1 className="text-3xl font-black tracking-tight text-fg-strong">
             {heading}
           </h1>
-          <p className="mt-1 text-sm text-ink-500">
-            {products.length} {products.length === 1 ? "product" : "products"}
-            {query ? ` matching “${query}”` : ""}
+          <p className="mt-1 text-sm text-fg-muted">
+            {t("products.count", { count: products.length })}
+            {query ? ` — “${query}”` : ""}
           </p>
         </div>
         <Suspense fallback={null}>
@@ -130,16 +132,15 @@ export default async function ProductsPage(props: PageProps<"/products">) {
         <div>
           {products.length === 0 ? (
             <div className="card flex flex-col items-center gap-3 py-20 text-center">
-              <PackageSearch className="h-10 w-10 text-ink-300" />
-              <h2 className="text-lg font-bold text-ink-900">
-                Nothing matches those filters
+              <PackageSearch className="h-10 w-10 text-fg-subtle" />
+              <h2 className="text-lg font-bold text-fg">
+                {t("products.empty.title")}
               </h2>
-              <p className="max-w-sm text-sm text-ink-500">
-                Try removing a filter, widening the price range or browsing a
-                different category.
+              <p className="max-w-sm text-sm text-fg-muted">
+                {t("products.empty.body")}
               </p>
               <Link href="/products" className="btn btn-primary mt-2">
-                Reset filters
+                {t("products.empty.reset")}
               </Link>
             </div>
           ) : (

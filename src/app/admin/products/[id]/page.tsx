@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/product-form";
+import { getT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Edit product",
@@ -14,12 +15,13 @@ export default async function EditProductPage(
 ) {
   const { id } = await props.params;
 
-  const [product, categories] = await Promise.all([
+  const [product, categories, t] = await Promise.all([
     prisma.product.findUnique({ where: { id } }),
     prisma.category.findMany({
       orderBy: { name: "asc" },
       select: { id: true, name: true },
     }),
+    getT(),
   ]);
 
   if (!product) notFound();
@@ -29,22 +31,22 @@ export default async function EditProductPage(
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/admin/products"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-ink-500 hover:text-ink-900"
+          className="inline-flex items-center gap-1 text-sm font-semibold text-fg-muted hover:text-fg"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to products
+          <ArrowLeft className="h-4 w-4" /> {t("common.back")}
         </Link>
         <Link
           href={`/products/${product.slug}`}
-          className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
+          className="inline-flex items-center gap-1 text-sm font-semibold text-brand-fg hover:text-brand-600"
         >
-          View in store <ExternalLink className="h-3.5 w-3.5" />
+          {t("admin.product.viewInStore")} <ExternalLink className="h-3.5 w-3.5" />
         </Link>
       </div>
 
-      <h1 className="mt-3 text-2xl font-black tracking-tight text-ink-950">
-        Edit product
+      <h1 className="mt-3 text-2xl font-black tracking-tight text-fg-strong">
+        {t("admin.product.edit.title")}
       </h1>
-      <p className="mt-1 text-sm text-ink-500">
+      <p className="mt-1 text-sm text-fg-muted">
         {product.name} · {product.sku}
       </p>
 

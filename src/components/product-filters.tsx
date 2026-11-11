@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
+import { useI18n } from "@/components/i18n-provider";
 
 type Category = { id: string; name: string; slug: string; count: number };
 
@@ -11,6 +12,7 @@ export function ProductFilters({
 }: {
   categories: Category[];
 }) {
+  const { t, categoryName } = useI18n();
   const router = useRouter();
   const params = useSearchParams();
 
@@ -43,27 +45,27 @@ export function ProductFilters({
   return (
     <aside className="card h-fit p-5 lg:sticky lg:top-32">
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-ink-900">
+        <h2 className="flex items-center gap-2 text-sm font-bold text-fg">
           <SlidersHorizontal className="h-4 w-4" />
-          Filters
+          {t("products.filters")}
           {activeCount > 0 ? (
-            <span className="badge bg-brand-50 text-brand-700">{activeCount}</span>
+            <span className="badge bg-brand-soft text-brand-fg">{activeCount}</span>
           ) : null}
         </h2>
         {activeCount > 0 ? (
           <button
             type="button"
             onClick={() => router.push("/products")}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-ink-500 hover:text-ink-900"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-fg-muted hover:text-fg"
           >
-            <X className="h-3.5 w-3.5" /> Clear
+            <X className="h-3.5 w-3.5" /> {t("products.clear")}
           </button>
         ) : null}
       </div>
 
       <div className="mt-5 space-y-6">
         <div>
-          <p className="label">Category</p>
+          <p className="label">{t("products.category")}</p>
           <div className="flex flex-wrap gap-1.5">
             {categories.map((item) => (
               <button
@@ -73,10 +75,10 @@ export function ProductFilters({
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   category === item.slug
                     ? "border-brand-600 bg-brand-600 text-white"
-                    : "border-ink-200 text-ink-600 hover:border-ink-400"
+                    : "border-line-strong text-fg-muted hover:border-ink-400"
                 }`}
               >
-                {item.name}
+                {categoryName(item.slug, item.name)}
                 <span className="ml-1 text-[10px] opacity-70">{item.count}</span>
               </button>
             ))}
@@ -84,36 +86,36 @@ export function ProductFilters({
         </div>
 
         <div>
-          <p className="label">Price</p>
+          <p className="label">{t("products.price")}</p>
           <div className="flex items-center gap-2">
             <input
               type="number"
               min={0}
-              placeholder="Min"
+              placeholder={t("products.minPrice")}
               defaultValue={minPrice}
               onBlur={(event) =>
                 update("min", event.target.value ? String(event.target.value) : null)
               }
               className="input"
-              aria-label="Minimum price"
+              aria-label={t("products.minPrice")}
             />
-            <span className="text-ink-400">–</span>
+            <span className="text-fg-subtle">–</span>
             <input
               type="number"
               min={0}
-              placeholder="Max"
+              placeholder={t("products.maxPrice")}
               defaultValue={maxPrice}
               onBlur={(event) =>
                 update("max", event.target.value ? String(event.target.value) : null)
               }
               className="input"
-              aria-label="Maximum price"
+              aria-label={t("products.maxPrice")}
             />
           </div>
         </div>
 
         <div>
-          <p className="label">Minimum rating</p>
+          <p className="label">{t("products.minRating")}</p>
           <div className="flex flex-wrap gap-1.5">
             {["4", "3"].map((value) => (
               <button
@@ -125,7 +127,7 @@ export function ProductFilters({
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   minRating === value
                     ? "border-brand-600 bg-brand-600 text-white"
-                    : "border-ink-200 text-ink-600 hover:border-ink-400"
+                    : "border-line-strong text-fg-muted hover:border-ink-400"
                 }`}
               >
                 ★ {value}+
@@ -135,27 +137,27 @@ export function ProductFilters({
         </div>
 
         <div className="space-y-2.5">
-          <label className="flex items-center gap-2.5 text-sm text-ink-700">
+          <label className="flex items-center gap-2.5 text-sm text-fg-muted">
             <input
               type="checkbox"
               checked={inStock}
               onChange={(event) =>
                 update("stock", event.target.checked ? "1" : null)
               }
-              className="h-4 w-4 rounded border-ink-300 text-brand-600"
+              className="h-4 w-4 rounded border-line-strong text-brand-fg"
             />
-            In stock only
+            {t("products.inStock")}
           </label>
-          <label className="flex items-center gap-2.5 text-sm text-ink-700">
+          <label className="flex items-center gap-2.5 text-sm text-fg-muted">
             <input
               type="checkbox"
               checked={deals}
               onChange={(event) =>
                 update("deals", event.target.checked ? "1" : null)
               }
-              className="h-4 w-4 rounded border-ink-300 text-brand-600"
+              className="h-4 w-4 rounded border-line-strong text-brand-fg"
             />
-            On sale
+            {t("products.onSale")}
           </label>
         </div>
       </div>
@@ -164,13 +166,14 @@ export function ProductFilters({
 }
 
 export function SortSelect() {
+  const { t } = useI18n();
   const router = useRouter();
   const params = useSearchParams();
   const sort = params.get("sort") ?? "featured";
 
   return (
-    <label className="flex items-center gap-2 text-sm text-ink-600">
-      <span className="hidden sm:inline">Sort by</span>
+    <label className="flex items-center gap-2 text-sm text-fg-muted">
+      <span className="hidden sm:inline">{t("products.sortBy")}</span>
       <select
         value={sort}
         onChange={(event) => {
@@ -181,12 +184,12 @@ export function SortSelect() {
         }}
         className="input w-auto py-2 text-sm"
       >
-        <option value="featured">Featured</option>
-        <option value="newest">Newest</option>
-        <option value="price-asc">Price: low to high</option>
-        <option value="price-desc">Price: high to low</option>
-        <option value="rating">Top rated</option>
-        <option value="name">Name A–Z</option>
+        <option value="featured">{t("products.sort.featured")}</option>
+        <option value="newest">{t("products.sort.newest")}</option>
+        <option value="price-asc">{t("products.sort.priceAsc")}</option>
+        <option value="price-desc">{t("products.sort.priceDesc")}</option>
+        <option value="rating">{t("products.sort.rating")}</option>
+        <option value="name">{t("products.sort.name")}</option>
       </select>
     </label>
   );

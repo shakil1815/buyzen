@@ -3,8 +3,10 @@
 import { useActionState } from "react";
 import { AlertCircle, Check } from "lucide-react";
 import { createCouponAction, type AdminState } from "@/lib/actions/admin";
+import { useI18n } from "@/components/i18n-provider";
 
 export function CouponForm() {
+  const { t } = useI18n();
   const [state, formAction, pending] = useActionState<AdminState, FormData>(
     createCouponAction,
     {},
@@ -12,12 +14,12 @@ export function CouponForm() {
 
   return (
     <form action={formAction} className="card space-y-4 p-5">
-      <h2 className="text-sm font-bold text-ink-900">Create a promo code</h2>
+      <h2 className="text-sm font-bold text-fg">{t("admin.coupons.createTitle")}</h2>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="code">
-            Code
+            {t("admin.coupons.code")}
           </label>
           <input
             id="code"
@@ -29,16 +31,16 @@ export function CouponForm() {
         </div>
         <div>
           <label className="label" htmlFor="type">
-            Type
+            {t("admin.coupons.type")}
           </label>
           <select id="type" name="type" className="input" defaultValue="PERCENT">
-            <option value="PERCENT">Percentage off</option>
-            <option value="FIXED">Fixed amount off</option>
+            <option value="PERCENT">{t("admin.coupons.percent")}</option>
+            <option value="FIXED">{t("admin.coupons.fixed")}</option>
           </select>
         </div>
         <div>
           <label className="label" htmlFor="value">
-            Value
+            {t("admin.coupons.value")}
           </label>
           <input
             id="value"
@@ -46,13 +48,13 @@ export function CouponForm() {
             type="number"
             min="1"
             required
-            placeholder="10 or 25.00"
+            placeholder={t("admin.coupons.valuePlaceholder")}
             className="input"
           />
         </div>
         <div>
           <label className="label" htmlFor="minSubtotal">
-            Minimum order ($)
+            {t("admin.coupons.minOrder")}
           </label>
           <input
             id="minSubtotal"
@@ -67,29 +69,29 @@ export function CouponForm() {
 
       <div>
         <label className="label" htmlFor="description">
-          Description
+          {t("admin.coupons.description")}
         </label>
         <input
           id="description"
           name="description"
-          placeholder="10% off orders over $50"
+          placeholder={t("admin.coupons.descriptionPlaceholder")}
           className="input"
         />
       </div>
 
       {state.error ? (
-        <p className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-sm font-medium text-rose-700">
+        <p className="flex items-center gap-2 rounded-xl border border-rose-200 bg-danger-soft px-3.5 py-2.5 text-sm font-medium text-danger-fg">
           <AlertCircle className="h-4 w-4 shrink-0" /> {state.error}
         </p>
       ) : null}
       {state.success ? (
-        <p className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm font-medium text-emerald-700">
+        <p className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-success-soft px-3.5 py-2.5 text-sm font-medium text-success-fg">
           <Check className="h-4 w-4 shrink-0" /> {state.success}
         </p>
       ) : null}
 
       <button type="submit" disabled={pending} className="btn btn-primary">
-        {pending ? "Creating…" : "Create coupon"}
+        {pending ? t("admin.coupons.creating") : t("admin.coupons.create")}
       </button>
     </form>
   );

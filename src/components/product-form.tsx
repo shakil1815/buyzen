@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { AlertCircle, Check } from "lucide-react";
 import { saveProductAction, type AdminState } from "@/lib/actions/admin";
+import { useI18n } from "@/components/i18n-provider";
 
 export type ProductFormValues = {
   id?: string;
@@ -24,6 +25,7 @@ export function ProductForm({
   categories: { id: string; name: string }[];
   product?: ProductFormValues;
 }) {
+  const { t } = useI18n();
   const [state, formAction, pending] = useActionState<AdminState, FormData>(
     saveProductAction,
     {},
@@ -36,11 +38,11 @@ export function ProductForm({
       ) : null}
 
       <div className="card p-5">
-        <h2 className="text-sm font-bold text-ink-900">Details</h2>
+        <h2 className="text-sm font-bold text-fg">{t("admin.product.details")}</h2>
         <div className="mt-4 space-y-4">
           <div>
             <label className="label" htmlFor="name">
-              Product name
+              {t("admin.product.name")}
             </label>
             <input
               id="name"
@@ -52,7 +54,7 @@ export function ProductForm({
           </div>
           <div>
             <label className="label" htmlFor="description">
-              Description
+              {t("admin.product.description")}
             </label>
             <textarea
               id="description"
@@ -67,7 +69,7 @@ export function ProductForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor="brand">
-                Brand
+                {t("admin.product.brand")}
               </label>
               <input
                 id="brand"
@@ -78,13 +80,13 @@ export function ProductForm({
             </div>
             <div>
               <label className="label" htmlFor="sku">
-                SKU
+                {t("admin.product.sku")}
               </label>
               <input
                 id="sku"
                 name="sku"
                 defaultValue={product?.sku ?? ""}
-                placeholder="Auto-generated"
+                placeholder={t("admin.product.skuPlaceholder")}
                 className="input"
               />
             </div>
@@ -93,11 +95,11 @@ export function ProductForm({
       </div>
 
       <div className="card p-5">
-        <h2 className="text-sm font-bold text-ink-900">Pricing &amp; stock</h2>
+        <h2 className="text-sm font-bold text-fg">{t("admin.product.pricing")}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <div>
             <label className="label" htmlFor="price">
-              Price (USD)
+              {t("admin.product.priceUsd")}
             </label>
             <input
               id="price"
@@ -112,7 +114,7 @@ export function ProductForm({
           </div>
           <div>
             <label className="label" htmlFor="compareAtPrice">
-              Compare-at price
+              {t("admin.product.comparePrice")}
             </label>
             <input
               id="compareAtPrice"
@@ -128,7 +130,7 @@ export function ProductForm({
           </div>
           <div>
             <label className="label" htmlFor="stock">
-              Stock
+              {t("admin.product.stock")}
             </label>
             <input
               id="stock"
@@ -144,11 +146,13 @@ export function ProductForm({
       </div>
 
       <div className="card p-5">
-        <h2 className="text-sm font-bold text-ink-900">Organisation</h2>
+        <h2 className="text-sm font-bold text-fg">
+          {t("admin.product.organisation")}
+        </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="categoryId">
-              Category
+              {t("admin.product.category")}
             </label>
             <select
               id="categoryId"
@@ -164,31 +168,35 @@ export function ProductForm({
               ))}
             </select>
           </div>
-          <label className="flex items-center gap-2.5 self-end pb-2.5 text-sm text-ink-700">
+          <label className="flex items-center gap-2.5 self-end pb-2.5 text-sm text-fg-muted">
             <input
               type="checkbox"
               name="featured"
               defaultChecked={product?.featured ?? false}
-              className="h-4 w-4 rounded border-ink-300 text-brand-600"
+              className="h-4 w-4 rounded border-line-strong text-brand-fg"
             />
-            Feature on the home page
+            {t("admin.product.featured")}
           </label>
         </div>
       </div>
 
       {state.error ? (
-        <p className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-sm font-medium text-rose-700">
+        <p className="flex items-center gap-2 rounded-xl border border-rose-200 bg-danger-soft px-3.5 py-2.5 text-sm font-medium text-danger-fg">
           <AlertCircle className="h-4 w-4 shrink-0" /> {state.error}
         </p>
       ) : null}
       {state.success ? (
-        <p className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm font-medium text-emerald-700">
+        <p className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-success-soft px-3.5 py-2.5 text-sm font-medium text-success-fg">
           <Check className="h-4 w-4 shrink-0" /> {state.success}
         </p>
       ) : null}
 
       <button type="submit" disabled={pending} className="btn btn-primary">
-        {pending ? "Saving…" : product?.id ? "Save changes" : "Create product"}
+        {pending
+          ? t("admin.product.saving")
+          : product?.id
+            ? t("admin.product.save")
+            : t("admin.product.create")}
       </button>
     </form>
   );

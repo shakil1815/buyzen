@@ -7,6 +7,8 @@ import {
   startStripeCheckout,
   type CheckoutState,
 } from "@/lib/actions/checkout";
+import { useI18n } from "@/components/i18n-provider";
+import { formatMoney } from "@/lib/format";
 
 export function CheckoutForm({
   defaultEmail,
@@ -19,18 +21,21 @@ export function CheckoutForm({
   total: number;
   stripeEnabled?: boolean;
 }) {
+  const { t, currency, usdToBdt } = useI18n();
   const [state, formAction, pending] = useActionState<CheckoutState, FormData>(
     placeOrderAction,
     {},
   );
 
+  const amount = formatMoney(total, currency, usdToBdt);
+
   return (
     <form action={formAction} className="space-y-6">
       <section className="card p-5">
-        <h2 className="text-sm font-bold text-ink-900">Contact</h2>
+        <h2 className="text-sm font-bold text-fg">{t("checkout.contact")}</h2>
         <div className="mt-4">
           <label className="label" htmlFor="email">
-            Email address
+            {t("checkout.email")}
           </label>
           <input
             id="email"
@@ -41,18 +46,20 @@ export function CheckoutForm({
             placeholder="you@example.com"
             className="input"
           />
-          <p className="mt-1.5 text-[11px] text-ink-400">
-            We will send the receipt and tracking updates here.
+          <p className="mt-1.5 text-[11px] text-fg-subtle">
+            {t("checkout.emailHelp")}
           </p>
         </div>
       </section>
 
       <section className="card p-5">
-        <h2 className="text-sm font-bold text-ink-900">Shipping address</h2>
+        <h2 className="text-sm font-bold text-fg">
+          {t("checkout.shippingAddress")}
+        </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label className="label" htmlFor="shippingName">
-              Full name
+              {t("checkout.fullName")}
             </label>
             <input
               id="shippingName"
@@ -64,39 +71,47 @@ export function CheckoutForm({
           </div>
           <div className="sm:col-span-2">
             <label className="label" htmlFor="address1">
-              Street address
+              {t("checkout.street")}
             </label>
             <input id="address1" name="address1" required className="input" />
           </div>
           <div className="sm:col-span-2">
             <label className="label" htmlFor="address2">
-              Apartment, suite (optional)
+              {t("checkout.apartment")}
             </label>
             <input id="address2" name="address2" className="input" />
           </div>
           <div>
             <label className="label" htmlFor="city">
-              City
+              {t("checkout.city")}
             </label>
             <input id="city" name="city" required className="input" />
           </div>
           <div>
             <label className="label" htmlFor="state">
-              State / region
+              {t("checkout.state")}
             </label>
             <input id="state" name="state" className="input" />
           </div>
           <div>
             <label className="label" htmlFor="postalCode">
-              Postal code
+              {t("checkout.postalCode")}
             </label>
             <input id="postalCode" name="postalCode" required className="input" />
           </div>
           <div>
             <label className="label" htmlFor="country">
-              Country
+              {t("checkout.country")}
             </label>
-            <select id="country" name="country" required className="input" defaultValue="United States">
+            <select
+              id="country"
+              name="country"
+              required
+              className="input"
+              defaultValue="Bangladesh"
+            >
+              <option>Bangladesh</option>
+              <option>India</option>
               <option>United States</option>
               <option>United Kingdom</option>
               <option>Canada</option>
@@ -111,7 +126,7 @@ export function CheckoutForm({
           </div>
           <div className="sm:col-span-2">
             <label className="label" htmlFor="phone">
-              Phone (optional)
+              {t("checkout.phone")}
             </label>
             <input id="phone" name="phone" className="input" />
           </div>
@@ -120,25 +135,24 @@ export function CheckoutForm({
 
       <section className="card p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-ink-900">Payment</h2>
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-600">
-            <Lock className="h-3.5 w-3.5" /> Encrypted
+          <h2 className="text-sm font-bold text-fg">{t("checkout.payment")}</h2>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-success-fg">
+            <Lock className="h-3.5 w-3.5" /> {t("checkout.encrypted")}
           </span>
         </div>
 
         {stripeEnabled ? (
-          <div className="mt-4 rounded-xl border border-ink-100 bg-ink-50 p-4 text-sm text-ink-600">
-            You will be redirected to Stripe Checkout to pay securely. Your card
-            details never touch our servers.
+          <div className="mt-4 rounded-xl border border-line bg-surface-2 p-4 text-sm text-fg-muted">
+            {t("checkout.stripeNote")}
           </div>
         ) : (
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <label className="label" htmlFor="cardNumber">
-                Card number
+                {t("checkout.cardNumber")}
               </label>
               <div className="relative">
-                <CreditCard className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+                <CreditCard className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-subtle" />
                 <input
                   id="cardNumber"
                   name="cardNumber"
@@ -152,7 +166,7 @@ export function CheckoutForm({
             </div>
             <div>
               <label className="label" htmlFor="expiry">
-                Expiry (MM/YY)
+                {t("checkout.expiry")}
               </label>
               <input
                 id="expiry"
@@ -165,7 +179,7 @@ export function CheckoutForm({
             </div>
             <div>
               <label className="label" htmlFor="cvc">
-                CVC
+                {t("checkout.cvc")}
               </label>
               <input
                 id="cvc"
@@ -181,16 +195,14 @@ export function CheckoutForm({
         )}
 
         {!stripeEnabled ? (
-          <p className="mt-4 rounded-xl bg-ink-50 p-3 text-[11px] leading-relaxed text-ink-500">
-            Demo checkout — no real charge is made. Use test card{" "}
-            <strong>4242 4242 4242 4242</strong> with any future expiry and any
-            CVC.
+          <p className="mt-4 rounded-xl bg-surface-2 p-3 text-[11px] leading-relaxed text-fg-muted">
+            {t("checkout.demoNote", { card: "4242 4242 4242 4242" })}
           </p>
         ) : null}
       </section>
 
       {state.error ? (
-        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+        <p className="rounded-xl border border-rose-200 bg-danger-soft px-4 py-3 text-sm font-semibold text-danger-fg">
           {state.error}
         </p>
       ) : null}
@@ -201,7 +213,7 @@ export function CheckoutForm({
           formAction={startStripeCheckout}
           className="btn btn-primary w-full py-3.5 text-base"
         >
-          Pay ${(total / 100).toFixed(2)} with Stripe
+          {t("checkout.payStripe", { amount })}
         </button>
       ) : (
         <button
@@ -209,12 +221,12 @@ export function CheckoutForm({
           disabled={pending}
           className="btn btn-primary w-full py-3.5 text-base"
         >
-          {pending ? "Processing payment…" : `Pay $${(total / 100).toFixed(2)}`}
+          {pending ? t("checkout.processing") : t("checkout.pay", { amount })}
         </button>
       )}
 
-      <p className="text-center text-[11px] text-ink-400">
-        By placing this order you agree to our terms of sale and privacy policy.
+      <p className="text-center text-[11px] text-fg-subtle">
+        {t("checkout.terms")}
       </p>
     </form>
   );

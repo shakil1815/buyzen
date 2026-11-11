@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Check, Star } from "lucide-react";
 import { submitReviewAction, type ReviewState } from "@/lib/actions/reviews";
+import { useI18n } from "@/components/i18n-provider";
 
 export function ReviewForm({
   productId,
@@ -13,6 +14,7 @@ export function ReviewForm({
   canReview: boolean;
   signedIn: boolean;
 }) {
+  const { t } = useI18n();
   const [state, formAction, pending] = useActionState<ReviewState, FormData>(
     submitReviewAction,
     {},
@@ -21,35 +23,35 @@ export function ReviewForm({
 
   if (!signedIn) {
     return (
-      <div className="card p-5 text-sm text-ink-600">
+      <div className="card p-5 text-sm text-fg-muted">
         <a
           href="/login?next=/products"
-          className="font-semibold text-brand-600 hover:underline"
+          className="font-semibold text-brand-fg hover:underline"
         >
-          Sign in
+          {t("auth.signIn")}
         </a>{" "}
-        to share your experience with this product.
+        {t("product.signInToReview")}
       </div>
     );
   }
 
   if (!canReview) {
     return (
-      <div className="card p-5 text-sm text-ink-600">
-        You have already reviewed this product. Thanks for the feedback!
+      <div className="card p-5 text-sm text-fg-muted">
+        {t("product.alreadyReviewed")}
       </div>
     );
   }
 
   return (
     <form action={formAction} className="card p-5">
-      <h3 className="text-sm font-bold text-ink-900">Write a review</h3>
+      <h3 className="text-sm font-bold text-fg">{t("product.writeReview")}</h3>
 
       <input type="hidden" name="productId" value={productId} />
       <input type="hidden" name="rating" value={rating} />
 
       <div className="mt-4">
-        <p className="label">Your rating</p>
+        <p className="label">{t("product.yourRating")}</p>
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((value) => (
             <button
@@ -69,13 +71,13 @@ export function ReviewForm({
               />
             </button>
           ))}
-          <span className="ml-2 text-xs text-ink-500">{rating} / 5</span>
+          <span className="ml-2 text-xs text-fg-muted">{rating} / 5</span>
         </div>
       </div>
 
       <div className="mt-4">
         <label className="label" htmlFor="review-title">
-          Title
+          {t("product.reviewTitle")}
         </label>
         <input
           id="review-title"
@@ -83,13 +85,13 @@ export function ReviewForm({
           required
           minLength={3}
           className="input"
-          placeholder="Sum it up in a few words"
+          placeholder={t("product.reviewTitlePlaceholder")}
         />
       </div>
 
       <div className="mt-4">
         <label className="label" htmlFor="review-body">
-          Your review
+          {t("product.reviewBody")}
         </label>
         <textarea
           id="review-body"
@@ -98,19 +100,19 @@ export function ReviewForm({
           minLength={10}
           rows={4}
           className="input resize-y"
-          placeholder="What did you like or dislike? How did you use it?"
+          placeholder={t("product.reviewBodyPlaceholder")}
         />
       </div>
 
       <button type="submit" disabled={pending} className="btn btn-primary mt-4">
-        {pending ? "Publishing…" : "Publish review"}
+        {pending ? t("product.publishing") : t("product.publishReview")}
       </button>
 
       {state.error ? (
-        <p className="mt-3 text-xs font-semibold text-rose-600">{state.error}</p>
+        <p className="mt-3 text-xs font-semibold text-danger-fg">{state.error}</p>
       ) : null}
       {state.success ? (
-        <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+        <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-success-fg">
           <Check className="h-3.5 w-3.5" /> {state.success}
         </p>
       ) : null}

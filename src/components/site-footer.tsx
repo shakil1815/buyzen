@@ -1,62 +1,78 @@
 import Link from "next/link";
-import { CreditCard, Globe, PackageCheck, RotateCcw, ShieldCheck } from "lucide-react";
+import {
+  CreditCard,
+  Globe,
+  PackageCheck,
+  RotateCcw,
+  ShieldCheck,
+} from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { prisma } from "@/lib/prisma";
+import { getT } from "@/lib/i18n/server";
 
 export async function SiteFooter() {
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-    select: { name: true, slug: true },
-  });
+  const [categories, t] = await Promise.all([
+    prisma.category.findMany({
+      orderBy: { name: "asc" },
+      select: { name: true, slug: true },
+    }),
+    getT(),
+  ]);
+
+  const links = {
+    shop: [
+      { href: "/products", label: t("nav.shopAll") },
+      { href: "/products?deals=1", label: t("nav.deals") },
+      { href: "/products?sort=newest", label: t("nav.newArrivals") },
+    ],
+    account: [
+      { href: "/account", label: t("nav.account") },
+      { href: "/account/orders", label: t("nav.orders") },
+      { href: "/account/wishlist", label: t("nav.wishlist") },
+      { href: "/login", label: t("nav.signIn") },
+      { href: "/register", label: t("nav.createAccount") },
+    ],
+    help: [
+      { href: "/help", label: t("help.shipping") },
+      { href: "/help#returns", label: t("help.returns") },
+      { href: "/help#contact", label: t("help.contactTitle") },
+      { href: "/help#faq", label: t("help.faq") },
+    ],
+  };
 
   return (
-    <footer className="mt-20 border-t border-ink-100 bg-ink-50/60">
+    <footer className="mt-20 border-t border-line bg-surface-2">
       <div className="container-page grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <Link href="/" className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-sm font-black text-white">
               SF
             </span>
-            <span className="text-lg font-black tracking-tight text-ink-950">
+            <span className="text-lg font-black tracking-tight text-fg-strong">
               ShopFront
             </span>
           </Link>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-600">
-            A modern demo storefront for premium tech, audio, gaming and home
-            goods. Free shipping over $150 and 30-day returns on everything.
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-fg-muted">
+            {t("footer.about")}
           </p>
           <NewsletterForm />
         </div>
 
         <div>
-          <h3 className="text-sm font-bold text-ink-900">Shop</h3>
+          <h3 className="text-sm font-bold text-fg">{t("footer.shop")}</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li>
-              <Link href="/products" className="text-ink-600 hover:text-brand-600">
-                All products
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/products?deals=1"
-                className="text-ink-600 hover:text-brand-600"
-              >
-                Today&apos;s deals
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/products?sort=newest"
-                className="text-ink-600 hover:text-brand-600"
-              >
-                New arrivals
-              </Link>
-            </li>
-            {categories.slice(0, 4).map((category) => (
+            {links.shop.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="text-fg-muted hover:text-brand-fg">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+            {categories.slice(0, 3).map((category) => (
               <li key={category.slug}>
                 <Link
                   href={`/products?category=${category.slug}`}
-                  className="text-ink-600 hover:text-brand-600"
+                  className="text-fg-muted hover:text-brand-fg"
                 >
                   {category.name}
                 </Link>
@@ -66,87 +82,50 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="text-sm font-bold text-ink-900">Account</h3>
+          <h3 className="text-sm font-bold text-fg">{t("footer.account")}</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li>
-              <Link href="/account" className="text-ink-600 hover:text-brand-600">
-                My account
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/account/orders"
-                className="text-ink-600 hover:text-brand-600"
-              >
-                Orders
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/account/wishlist"
-                className="text-ink-600 hover:text-brand-600"
-              >
-                Wishlist
-              </Link>
-            </li>
-            <li>
-              <Link href="/login" className="text-ink-600 hover:text-brand-600">
-                Sign in
-              </Link>
-            </li>
-            <li>
-              <Link href="/register" className="text-ink-600 hover:text-brand-600">
-                Create account
-              </Link>
-            </li>
+            {links.account.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="text-fg-muted hover:text-brand-fg">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
         <div>
-          <h3 className="text-sm font-bold text-ink-900">Help</h3>
+          <h3 className="text-sm font-bold text-fg">{t("footer.help")}</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li>
-              <Link href="/help" className="text-ink-600 hover:text-brand-600">
-                Shipping &amp; delivery
-              </Link>
-            </li>
-            <li>
-              <Link href="/help#returns" className="text-ink-600 hover:text-brand-600">
-                Returns &amp; refunds
-              </Link>
-            </li>
-            <li>
-              <Link href="/help#contact" className="text-ink-600 hover:text-brand-600">
-                Contact us
-              </Link>
-            </li>
-            <li>
-              <Link href="/help#faq" className="text-ink-600 hover:text-brand-600">
-                FAQ
-              </Link>
-            </li>
+            {links.help.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="text-fg-muted hover:text-brand-fg">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-ink-100">
-        <div className="container-page flex flex-col items-center justify-between gap-4 py-6 text-xs text-ink-500 sm:flex-row">
-          <p>© {new Date().getFullYear()} ShopFront. Demo storefront.</p>
-          <div className="flex items-center gap-5">
+      <div className="border-t border-line">
+        <div className="container-page flex flex-col items-center justify-between gap-4 py-6 text-xs text-fg-muted sm:flex-row">
+          <p>{t("footer.copyright", { year: new Date().getFullYear() })}</p>
+          <div className="flex flex-wrap items-center gap-5">
             <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4" /> Secure checkout
+              <ShieldCheck className="h-4 w-4" /> {t("footer.secure")}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <PackageCheck className="h-4 w-4" /> Tracked delivery
+              <PackageCheck className="h-4 w-4" /> {t("footer.tracked")}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <RotateCcw className="h-4 w-4" /> 30-day returns
+              <RotateCcw className="h-4 w-4" /> {t("footer.returns")}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CreditCard className="h-4 w-4" /> Cards &amp; wallets
+              <CreditCard className="h-4 w-4" /> {t("footer.cards")}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Globe className="h-4 w-4" /> Worldwide
+              <Globe className="h-4 w-4" /> {t("footer.worldwide")}
             </span>
           </div>
         </div>

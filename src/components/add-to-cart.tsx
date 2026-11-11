@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Check, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { addItemAction } from "@/lib/actions/cart";
+import { useI18n } from "@/components/i18n-provider";
 
 export function AddToCart({
   productId,
@@ -20,6 +21,7 @@ export function AddToCart({
   variant?: "primary" | "dark" | "outline";
   compact?: boolean;
 }) {
+  const { t } = useI18n();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -48,12 +50,12 @@ export function AddToCart({
       }
     >
       {compact ? null : (
-        <div className="flex items-center rounded-xl border border-ink-200">
+        <div className="flex items-center rounded-xl border border-line-strong">
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="px-3 py-2 text-lg leading-none text-ink-500 transition hover:text-ink-900"
-            aria-label="Decrease quantity"
+            className="px-3 py-2 text-lg leading-none text-fg-muted transition hover:text-fg-strong"
+            aria-label={t("cart.decrease")}
           >
             −
           </button>
@@ -63,8 +65,8 @@ export function AddToCart({
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(max, value + 1))}
-            className="px-3 py-2 text-lg leading-none text-ink-500 transition hover:text-ink-900"
-            aria-label="Increase quantity"
+            className="px-3 py-2 text-lg leading-none text-fg-muted transition hover:text-fg-strong"
+            aria-label={t("cart.increase")}
           >
             +
           </button>
@@ -76,17 +78,17 @@ export function AddToCart({
         onClick={add}
         disabled={disabled || pending}
         className={`${className} ${compact ? "px-3 py-2 text-xs" : "min-w-[9.5rem]"}`}
-        aria-label={compact ? `Add ${label} to cart` : undefined}
+        aria-label={compact ? t("product.addToCart") : undefined}
       >
         {added ? (
           <>
             <Check className="h-4 w-4" />
-            {compact ? "Added" : "Added"}
+            {t("product.added")}
           </>
         ) : (
           <>
             <ShoppingBag className="h-4 w-4" />
-            {pending ? "Adding…" : label}
+            {pending ? "…" : label}
           </>
         )}
       </button>

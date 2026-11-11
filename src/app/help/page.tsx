@@ -7,150 +7,169 @@ import {
   RotateCcw,
   Truck,
 } from "lucide-react";
+import { getT, getLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Help centre",
   description: "Shipping, returns, payments and answers to common questions.",
 };
 
-const FAQ = [
-  {
-    q: "How long does delivery take?",
-    a: "Standard delivery takes 2-5 business days and is free on orders over $150. Orders placed before 4pm are dispatched the same working day, and you get a tracking link by email as soon as the parcel leaves the warehouse.",
-  },
-  {
-    q: "Can I return an item?",
-    a: "Yes. You can return any unopened item within 30 days of delivery for a full refund. We email a prepaid return label, and refunds are issued 3-5 days after the parcel is scanned back into our warehouse.",
-  },
-  {
-    q: "Which payment methods do you accept?",
-    a: "All major credit and debit cards, Apple Pay, Google Pay, PayPal and Pay in 4. Your payment details are encrypted and we never store the full card number.",
-  },
-  {
-    q: "Do you ship internationally?",
-    a: "We ship to more than 40 countries. Duties and taxes are calculated at checkout so there are no surprises on delivery.",
-  },
-  {
-    q: "How do I track my order?",
-    a: "Sign in and open the Orders section of your account. Each order shows its live status and the tracking number for the carrier.",
-  },
-  {
-    q: "Do you offer a warranty?",
-    a: "Every product includes a 2-year warranty against manufacturing faults. If something goes wrong, contact support and we will arrange a repair or replacement.",
-  },
-];
+const FAQ = {
+  en: [
+    {
+      q: "How long does delivery take?",
+      a: "Standard delivery takes 2-5 business days and is free on orders over $150. Orders placed before 4pm are dispatched the same working day, and you get a tracking link by email as soon as the parcel leaves the warehouse.",
+    },
+    {
+      q: "Can I return an item?",
+      a: "Yes. You can return any unopened item within 30 days of delivery for a full refund. We email a prepaid return label, and refunds are issued 3-5 days after the parcel is scanned back into our warehouse.",
+    },
+    {
+      q: "Which payment methods do you accept?",
+      a: "All major credit and debit cards, Apple Pay, Google Pay, PayPal and Pay in 4. Your payment details are encrypted and we never store the full card number.",
+    },
+    {
+      q: "Do you ship internationally?",
+      a: "We ship to more than 40 countries. Duties and taxes are calculated at checkout so there are no surprises on delivery.",
+    },
+    {
+      q: "How do I track my order?",
+      a: "Sign in and open the Orders section of your account. Each order shows its live status and the tracking number for the carrier.",
+    },
+    {
+      q: "Do you offer a warranty?",
+      a: "Every product includes a 2-year warranty against manufacturing faults. If something goes wrong, contact support and we will arrange a repair or replacement.",
+    },
+  ],
+  bn: [
+    {
+      q: "ডেলিভারিতে কত সময় লাগে?",
+      a: "স্ট্যান্ডার্ড ডেলিভারিতে ২-৫ কার্যদিবস লাগে এবং ৳১৫০ (বা $150) এর বেশি অর্ডারে এটি সম্পূর্ণ ফ্রি। বিকেল ৪টার আগে দেওয়া অর্ডার সেই দিনেই পাঠানো হয় এবং পার্সেল ওয়্যারহাউস থেকে বের হওয়ামাত্র ইমেইলে ট্র্যাকিং লিংক পাঠানো হয়।",
+    },
+    {
+      q: "পণ্য ফেরত দেওয়া যাবে?",
+      a: "হ্যাঁ। ডেলিভারির ৩০ দিনের মধ্যে অব্যবহৃত যেকোনো পণ্য ফেরত দিয়ে সম্পূর্ণ টাকা ফেরত পাওয়া যায়। আমরা প্রি-পেইড রিটার্ন লেবেল পাঠাই এবং পার্সেল স্ক্যান হওয়ার ৩-৫ দিনের মধ্যে টাকা ফেরত দেওয়া হয়।",
+    },
+    {
+      q: "কোন কোন পেমেন্ট পদ্ধতি গ্রহণ করেন?",
+      a: "সব প্রধান ক্রেডিট ও ডেবিট কার্ড, অ্যাপল পে, গুগল পে, পেপাল এবং কিস্তিতে পেমেন্ট। আপনার পেমেন্ট তথ্য এনক্রিপ্টেড থাকে এবং আমরা কখনো পুরো কার্ড নম্বর সংরক্ষণ করি না।",
+    },
+    {
+      q: "আপনারা কি আন্তর্জাতিকভাবে ডেলিভারি করেন?",
+      a: "আমরা ৪০টির বেশি দেশে ডেলিভারি করি। চুক্তি ও কর চেকআউটেই হিসাব হয়, তাই ডেলিভারিতে কোনো চমক থাকে না।",
+    },
+    {
+      q: "অর্ডার কীভাবে ট্র্যাক করব?",
+      a: "সাইন ইন করে আপনার অ্যাকাউন্টের Orders অংশে যান। প্রতিটি অর্ডারে লাইভ স্ট্যাটাস ও ক্যারিয়ারের ট্র্যাকিং নম্বর দেখা যাবে।",
+    },
+    {
+      q: "ওয়ারেন্টি দেওয়া হয়?",
+      a: "প্রতিটি পণ্যে উৎপাদনগত ত্রুটির বিরুদ্ধে ২ বছরের ওয়ারেন্টি রয়েছে। সমস্যা হলে সাপোর্টে যোগাযোগ করুন, আমরা মেরামত বা বদলে দেব।",
+    },
+  ],
+};
 
-export default function HelpPage() {
+export default async function HelpPage() {
+  const [t, locale] = await Promise.all([getT(), getLocale()]);
+  const faq = FAQ[locale === "bn" ? "bn" : "en"];
+
   return (
     <div className="container-page py-12">
       <div className="max-w-2xl">
-        <h1 className="text-4xl font-black tracking-tight text-ink-950">
-          How can we help?
+        <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-fg">
+          <span className="h-px w-6 bg-brand-400" />
+          ShopFront
+        </span>
+        <h1 className="mt-2 text-4xl font-black tracking-tight text-fg-strong">
+          {t("help.title")}
         </h1>
-        <p className="mt-3 text-base text-ink-500">
-          Everything about shipping, returns, payments and warranty — plus a
-          friendly assistant in the corner of the screen if you would rather chat.
-        </p>
+        <p className="mt-3 text-base text-fg-muted">{t("help.body")}</p>
       </div>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           {
             icon: Truck,
-            title: "Shipping",
-            body: "Free over $150 · 2-5 business days",
+            title: t("help.shipping"),
+            body: t("help.shippingBody"),
           },
           {
             icon: RotateCcw,
-            title: "Returns",
-            body: "30 days, free label, quick refunds",
+            title: t("help.returns"),
+            body: t("help.returnsTag"),
           },
           {
             icon: CreditCard,
-            title: "Payments",
-            body: "Cards, wallets, PayPal and Pay in 4",
+            title: t("help.payments"),
+            body: t("help.paymentsBody"),
           },
           {
             icon: Package,
-            title: "Warranty",
-            body: "2 years on everything we sell",
+            title: t("help.warranty"),
+            body: t("help.warrantyBody"),
           },
         ].map((item) => (
           <div key={item.title} className="card flex items-center gap-3 p-5">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-brand-600">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-soft text-brand-fg">
               <item.icon className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-semibold text-ink-900">{item.title}</p>
-              <p className="text-xs text-ink-500">{item.body}</p>
+              <p className="text-sm font-semibold text-fg">{item.title}</p>
+              <p className="text-xs text-fg-muted">{item.body}</p>
             </div>
           </div>
         ))}
       </div>
 
       <section id="faq" className="mt-14 scroll-mt-32">
-        <h2 className="text-2xl font-black tracking-tight text-ink-950">
-          Frequently asked questions
+        <h2 className="text-2xl font-black tracking-tight text-fg-strong">
+          {t("help.faq")}
         </h2>
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          {FAQ.map((item) => (
+          {faq.map((item) => (
             <div key={item.q} className="card p-5">
-              <h3 className="text-sm font-bold text-ink-900">{item.q}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-600">{item.a}</p>
+              <h3 className="text-sm font-bold text-fg">{item.q}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-fg-muted">{item.a}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section id="returns" className="mt-14 scroll-mt-32">
-        <h2 className="text-2xl font-black tracking-tight text-ink-950">
-          Returns &amp; refunds
+        <h2 className="text-2xl font-black tracking-tight text-fg-strong">
+          {t("help.returnsTitle")}
         </h2>
-        <div className="card mt-6 p-6 text-sm leading-relaxed text-ink-600">
-          <p>
-            Changed your mind? That is fine — most of our products can go back
-            within 30 days as long as they are unopened and in their original
-            packaging.
-          </p>
+        <div className="card mt-6 p-6 text-sm leading-relaxed text-fg-muted">
+          <p>{t("help.returnsBody")}</p>
           <ol className="mt-4 list-decimal space-y-2 pl-5">
-            <li>Open your account and find the order you want to return.</li>
-            <li>Print the prepaid label we email you, or drop the parcel at any drop-off point.</li>
-            <li>We refund the original payment method 3-5 days after the parcel is scanned.</li>
+            <li>{t("help.returnsSteps1")}</li>
+            <li>{t("help.returnsSteps2")}</li>
+            <li>{t("help.returnsSteps3")}</li>
           </ol>
           <p className="mt-4">
-            Sale items and opened audio gear are covered by our 2-year warranty
-            instead. Reach us at{" "}
-            <a
-              href="mailto:support@shopfront.dev"
-              className="font-semibold text-brand-600"
-            >
-              support@shopfront.dev
-            </a>{" "}
-            and we will sort it out.
+            {t("help.returnsContact", { email: "support@shopfront.dev" })}
           </p>
         </div>
       </section>
 
       <section id="contact" className="mt-14 scroll-mt-32">
-        <h2 className="text-2xl font-black tracking-tight text-ink-950">
-          Contact us
+        <h2 className="text-2xl font-black tracking-tight text-fg-strong">
+          {t("help.contactTitle")}
         </h2>
         <div className="card mt-6 flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-brand-600">
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-soft text-brand-fg">
               <Mail className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-semibold text-ink-900">
+              <p className="text-sm font-semibold text-fg">
                 support@shopfront.dev
               </p>
-              <p className="text-xs text-ink-500">
-                We reply to every message within one business day.
-              </p>
+              <p className="text-xs text-fg-muted">{t("help.contactBody")}</p>
             </div>
           </div>
           <Link href="/products" className="btn btn-outline">
-            Back to shopping
+            {t("help.backToShopping")}
           </Link>
         </div>
       </section>

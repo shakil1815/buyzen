@@ -19,7 +19,9 @@
     "screenshots": "node scripts/screenshots.mjs",
     "verify": "npm run typecheck && npm run lint && npm run build",
     "e2e:admin": "node scripts/e2e-admin.mjs",
-    "screenshots:mobile": "node scripts/screenshots-mobile.mjs"
+    "screenshots:mobile": "node scripts/screenshots-mobile.mjs",
+    "e2e:i18n": "node scripts/e2e-i18n.mjs",
+    "screenshots:i18n": "node scripts/screenshots-i18n.mjs"
   },
   "prisma": {
     "seed": "node prisma/seed.mts"

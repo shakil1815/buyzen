@@ -596,13 +596,12 @@ async function main() {
         (_, variant) => `/products/${item.slug}-${variant + 1}.svg`,
       );
       const image = gallery[0];
-      for (const [variant, path] of gallery.entries()) {
+      for (const [variant] of gallery.entries()) {
         writeFileSync(
           join(publicDir, `${item.slug}-${variant + 1}.svg`),
           productSvg(item, categorySlug, variant),
         );
-      }
-      writeFileSync(
+      }      writeFileSync(
         join(publicDir, `${item.slug}.svg`),
         productSvg(item, categorySlug, 0),
       );

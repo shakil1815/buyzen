@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/components/i18n-provider";
+import { formatMoney } from "@/lib/format";
 
 type Suggestion = {
   slug: string;
@@ -14,6 +16,7 @@ type Suggestion = {
 };
 
 export function SearchBar() {
+  const { t, currency, usdToBdt } = useI18n();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -62,11 +65,11 @@ export function SearchBar() {
     <div ref={containerRef} className="relative w-full">
       <form onSubmit={submit} role="search">
         <label className="sr-only" htmlFor="site-search">
-          Search products
+          {t("nav.searchLabel")}
         </label>
         <div className="relative">
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-subtle"
             aria-hidden
           />
           <input
@@ -82,7 +85,7 @@ export function SearchBar() {
               }
             }}
             onFocus={() => suggestions.length > 0 && setOpen(true)}
-            placeholder="Search headphones, laptops, cameras…"
+            placeholder={t("nav.searchPlaceholder")}
             className="input pl-9 pr-9"
             autoComplete="off"
           />
@@ -93,8 +96,8 @@ export function SearchBar() {
                 setQuery("");
                 setSuggestions([]);
               }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-ink-400 hover:bg-ink-100 hover:text-ink-700"
-              aria-label="Clear search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-fg-subtle hover:bg-surface-3 hover:text-fg-muted"
+              aria-label={t("nav.clearSearch")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -103,14 +106,14 @@ export function SearchBar() {
       </form>
 
       {open && suggestions.length > 0 ? (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-ink-100 bg-white shadow-lift">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-line bg-surface shadow-lift">
           <ul className="max-h-80 overflow-y-auto">
             {suggestions.map((item) => (
               <li key={item.slug}>
                 <Link
                   href={`/products/${item.slug}`}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 transition hover:bg-ink-50"
+                  className="flex items-center gap-3 px-3 py-2.5 transition hover:bg-surface-2"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -119,15 +122,15 @@ export function SearchBar() {
                     className="h-10 w-10 rounded-lg object-cover"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-ink-900">
+                    <span className="block truncate text-sm font-medium text-fg">
                       {item.name}
                     </span>
-                    <span className="block text-xs text-ink-500">
+                    <span className="block text-xs text-fg-muted">
                       {item.category}
                     </span>
                   </span>
-                  <span className="text-sm font-semibold text-ink-900">
-                    ${(item.price / 100).toFixed(2)}
+                  <span className="text-sm font-semibold text-fg">
+                    {formatMoney(item.price, currency, usdToBdt)}
                   </span>
                 </Link>
               </li>
@@ -139,9 +142,9 @@ export function SearchBar() {
               setOpen(false);
               router.push(`/products?q=${encodeURIComponent(query.trim())}`);
             }}
-            className="block w-full border-t border-ink-100 px-3 py-2 text-left text-xs font-semibold text-brand-600 hover:bg-brand-50"
+            className="block w-full border-t border-line px-3 py-2 text-left text-xs font-semibold text-brand-fg hover:bg-brand-soft"
           >
-            See all results
+            {t("nav.viewResults")}
           </button>
         </div>
       ) : null}

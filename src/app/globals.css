@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-brand-50: #eef4ff;
   --color-brand-100: #d9e6ff;
@@ -25,12 +27,79 @@
   --color-ink-900: #363b48;
   --color-ink-950: #22252e;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", sans-serif;
+  /* Semantic tokens - they flip with the active theme. */
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-strong: var(--fg-strong);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-fg: var(--brand-fg);
+  --color-success-soft: var(--success-soft);
+  --color-success-fg: var(--success-fg);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-fg: var(--warn-fg);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-fg: var(--danger-fg);
+  --color-info-soft: var(--info-soft);
+  --color-info-fg: var(--info-fg);
+
+  --font-sans: var(--font-geist-sans), "Noto Sans Bengali", "Nirmala UI",
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 
   --shadow-soft: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 24px -12px rgb(16 24 40 / 0.18);
   --shadow-lift: 0 2px 4px rgb(16 24 40 / 0.04), 0 18px 40px -16px rgb(16 24 40 / 0.28);
+}
+
+:root {
+  --surface: #ffffff;
+  --surface-2: #f6f7f9;
+  --surface-3: #eceef2;
+  --line: #e7e9ef;
+  --line-strong: #d5dae3;
+  --fg: #363b48;
+  --fg-strong: #171a21;
+  --fg-muted: #545f7a;
+  --fg-subtle: #8695ac;
+  --brand-soft: #eef4ff;
+  --brand-fg: #1f43f5;
+  --success-soft: #ecfdf5;
+  --success-fg: #047857;
+  --warn-soft: #fffbeb;
+  --warn-fg: #b45309;
+  --danger-soft: #fff1f2;
+  --danger-fg: #be123c;
+  --info-soft: #f0f9ff;
+  --info-fg: #0369a1;
+  color-scheme: light;
+}
+
+.dark {
+  --surface: #0e1117;
+  --surface-2: #151a23;
+  --surface-3: #1d232e;
+  --line: #232a36;
+  --line-strong: #333c4b;
+  --fg: #dde2ea;
+  --fg-strong: #f7f9fc;
+  --fg-muted: #98a3b6;
+  --fg-subtle: #6c7789;
+  --brand-soft: rgba(51, 102, 255, 0.14);
+  --brand-fg: #8eb7ff;
+  --success-soft: rgba(16, 185, 129, 0.14);
+  --success-fg: #34d399;
+  --warn-soft: rgba(245, 158, 11, 0.16);
+  --warn-fg: #fbbf24;
+  --danger-soft: rgba(244, 63, 94, 0.16);
+  --danger-fg: #fb7185;
+  --info-soft: rgba(14, 165, 233, 0.16);
+  --info-fg: #38bdf8;
+  color-scheme: dark;
 }
 
 @layer base {
@@ -39,15 +108,20 @@
   }
 
   body {
-    background-color: #ffffff;
-    color: var(--color-ink-900);
+    background-color: var(--surface);
+    color: var(--fg);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 
   ::selection {
-    background-color: var(--color-brand-200);
-    color: var(--color-brand-950);
+    background-color: var(--brand-200);
+    color: var(--brand-950);
+  }
+
+  .dark ::selection {
+    background-color: rgba(51, 102, 255, 0.35);
+    color: #ffffff;
   }
 }
 
@@ -100,6 +174,14 @@
     transform: translateY(-1px);
   }
 
+  .dark .btn-primary {
+    background-color: var(--color-brand-500);
+  }
+
+  .dark .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-brand-400);
+  }
+
   .btn-dark {
     background-color: var(--color-ink-950);
     color: white;
@@ -109,37 +191,51 @@
     background-color: var(--color-ink-800);
   }
 
+  .dark .btn-dark {
+    background-color: var(--color-surface-3);
+    color: var(--fg-strong);
+    border: 1px solid var(--line-strong);
+  }
+
+  .dark .btn-dark:hover:not(:disabled) {
+    background-color: var(--line-strong);
+  }
+
   .btn-outline {
-    border: 1px solid var(--color-ink-200);
-    color: var(--color-ink-800);
-    background-color: white;
+    border: 1px solid var(--line-strong);
+    color: var(--fg);
+    background-color: var(--surface);
   }
 
   .btn-outline:hover:not(:disabled) {
-    border-color: var(--color-ink-400);
-    background-color: var(--color-ink-50);
+    border-color: var(--fg-subtle);
+    background-color: var(--surface-2);
   }
 
   .btn-ghost {
-    color: var(--color-ink-600);
+    color: var(--fg-muted);
   }
 
   .btn-ghost:hover:not(:disabled) {
-    background-color: var(--color-ink-100);
-    color: var(--color-ink-900);
+    background-color: var(--surface-3);
+    color: var(--fg-strong);
   }
 
   .input {
     width: 100%;
     border-radius: 0.75rem;
-    border: 1px solid var(--color-ink-200);
-    background-color: white;
+    border: 1px solid var(--line-strong);
+    background-color: var(--surface);
     padding: 0.7rem 0.9rem;
     font-size: 0.9rem;
-    color: var(--color-ink-900);
+    color: var(--fg-strong);
     transition:
       border-color 150ms ease,
       box-shadow 150ms ease;
+  }
+
+  .input::placeholder {
+    color: var(--fg-subtle);
   }
 
   .input:focus {
@@ -152,15 +248,15 @@
     display: block;
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--color-ink-700);
+    color: var(--fg-muted);
     margin-bottom: 0.35rem;
     letter-spacing: 0.01em;
   }
 
   .card {
     border-radius: 1rem;
-    border: 1px solid var(--color-ink-100);
-    background-color: white;
+    border: 1px solid var(--line);
+    background-color: var(--surface);
     box-shadow: var(--shadow-soft);
   }
 
@@ -178,9 +274,9 @@
   .skeleton {
     background: linear-gradient(
       90deg,
-      var(--color-ink-100) 25%,
-      var(--color-ink-50) 37%,
-      var(--color-ink-100) 63%
+      var(--surface-3) 25%,
+      var(--surface-2) 37%,
+      var(--surface-3) 63%
     );
     background-size: 400% 100%;
     animation: shimmer 1.4s ease infinite;
