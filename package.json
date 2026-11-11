@@ -18,7 +18,8 @@
     "e2e:account": "node scripts/e2e-account.mjs",
     "screenshots": "node scripts/screenshots.mjs",
     "verify": "npm run typecheck && npm run lint && npm run build",
-    "e2e:admin": "node scripts/e2e-admin.mjs"
+    "e2e:admin": "node scripts/e2e-admin.mjs",
+    "screenshots:mobile": "node scripts/screenshots-mobile.mjs"
   },
   "prisma": {
     "seed": "node prisma/seed.mts"

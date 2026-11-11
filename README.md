@@ -46,6 +46,7 @@ reviews and coupon codes.
 | `npm run db:studio`    | Prisma Studio (browse the data)                            |
 | `npm run e2e`          | Browser test of the shopping journey                       |
 | `npm run e2e:account`  | Browser test of the account journey                        |
+| `npm run e2e:admin`    | Browser test of the admin CRUD flow                        |
 | `npm run screenshots`  | Save screenshots of the main pages to `screenshots/`       |
 
 ---
@@ -174,9 +175,11 @@ The `scripts/e2e*.mjs` files drive a real browser (Microsoft Edge via
 npm run dev          # in one terminal
 npm run e2e          # browse → add to cart → promo code → checkout → admin
 npm run e2e:account  # register → wishlist → review → order → history → newsletter
+npm run e2e:admin    # sign in → create product → edit → delete → coupons/orders/customers
 ```
 
-Both suites currently pass **11/11** and **7/7** checks with zero console errors.
+All three suites currently pass **11/11**, **7/7** and **6/6** checks with zero
+console errors.
 
 ---
 
