@@ -52,6 +52,8 @@ reviews and coupon codes.
 | `npm run e2e:account`  | Browser test of the account journey                        |
 | `npm run e2e:admin`    | Browser test of the admin CRUD flow                        |
 | `npm run e2e:i18n`     | Browser test of language, currency and theme switching     |
+| `npm run fetch:photos` | Re-download real product photography from Wikimedia Commons |
+| `npm run check:images` | Verify every product image file exists on disk             |
 | `npm run screenshots`  | Save screenshots of the main pages to `screenshots/`       |
 
 ---
@@ -113,11 +115,30 @@ reviews and coupon codes.
 - **Free-shipping progress** and discount/compare-at pricing surfaced throughout.
 
 ### Admin back office (`/admin`)
-- Dashboard: revenue, orders, products, customers, recent orders, low-stock alerts.
-- Product CRUD (create, edit, delete, feature toggles, stock management).
-- Order management with inline status transitions.
-- Coupon management (create, enable/disable).
-- Customer list with lifetime value.
+
+| Section       | What you can do there                                                             |
+| ------------- | --------------------------------------------------------------------------------- |
+| **Dashboard** | Revenue, orders, average order value, product and customer KPIs · 14-day sales chart · top sellers · recent orders · low-stock alerts · a "what you can do here" guide |
+| **Products**  | Create, edit and delete catalogue items · price, compare-at price, stock, brand, SKU, category · **change photos** (main image + gallery paths or URLs) · feature a product on the home page · open it in the storefront |
+| **Orders**    | Every order with customer, address, items and payment detail · one-click status changes (paid → processing → shipped → delivered → cancelled) · full order detail page |
+| **Coupons**   | Percentage or fixed-amount promo codes with a minimum order value · enable/disable · usage counters |
+| **Customers** | Registered shoppers with order count, wishlist size and lifetime value            |
+
+Sign in with `admin@shopfront.dev` / `admin12345` — the admin area is role-gated and
+invisible to regular customers.
+
+### Product photography
+The demo ships with **real photographs** for all 32 products, downloaded from
+Wikimedia Commons (CC / public-domain) into `public/products/photos/` by:
+
+```bash
+npm run fetch:photos   # search + download + update the catalogue
+npm run check:images   # verify every product image exists on disk
+```
+
+Each product gets up to three gallery images; the attribution (author + licence) is
+written to `public/products/photos/credits.json` and listed on the **/credits** page.
+Swap in your own studio shots any time by pointing the admin product form at them.
 
 ### AI shopping assistant
 - Floating chat widget on every page (`/api/chat`).
@@ -244,3 +265,7 @@ zero console errors.
 - The built-in payment form is a simulation — no card data is stored or sent.
 - Reviews are currently available to any signed-in customer rather than being
   restricted to verified purchasers (the UI copy notes the intent).
+- The catalogue is **fictional demo data** (brands, prices, descriptions). The
+  photographs are real photos of comparable products sourced from Wikimedia
+  Commons under CC / public-domain licences — see `/credits`. Replace both the
+  data and the photography with your own before going live.

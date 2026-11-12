@@ -19,7 +19,16 @@ const productSchema = z.object({
   sku: z.string().optional(),
   categoryId: z.string().min(1, "Pick a category"),
   featured: z.coerce.boolean().optional(),
+  image: z.string().optional(),
+  gallery: z.string().optional(),
 });
+
+function normaliseImage(value?: string) {
+  const trimmed = (value ?? "").trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("/") || /^https?:\/\//i.test(trimmed)) return trimmed;
+  return null;
+}
 
 function toCents(value: number) {
   return Math.round(value * 100);
@@ -42,11 +51,18 @@ export async function saveProductAction(
     sku: formData.get("sku") || undefined,
     categoryId: formData.get("categoryId"),
     featured: formData.get("featured") === "on",
+    image: formData.get("image") || undefined,
+    gallery: formData.get("gallery") || undefined,
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Check the product details." };
   }
+
+  const gallery = (parsed.data.gallery ?? "")
+    .split(",")
+    .map((entry) => normaliseImage(entry))
+    .filter((entry): entry is string => Boolean(entry));
 
   const data = {
     name: parsed.data.name,
@@ -59,10 +75,16 @@ export async function saveProductAction(
     brand: parsed.data.brand ?? null,
     featured: parsed.data.featured ?? false,
     categoryId: parsed.data.categoryId,
+    ...(gallery.length > 0 ? { gallery: JSON.stringify(gallery) } : {}),
   };
 
+  const image = normaliseImage(parsed.data.image);
+
   if (id) {
-    await prisma.product.update({ where: { id }, data });
+    await prisma.product.update({
+      where: { id },
+      data: { ...data, ...(image ? { image } : {}) },
+    });
     revalidatePath("/admin/products");
     revalidatePath("/products");
     return { success: "Product updated." };
@@ -78,8 +100,11 @@ export async function saveProductAction(
       ...data,
       slug,
       sku,
-      image: `/products/${slug}.svg`,
-      gallery: JSON.stringify([`/products/${slug}.svg`]),
+      image: image ?? "/products/placeholder.svg",
+      gallery:
+        gallery.length > 0
+          ? JSON.stringify(gallery)
+          : JSON.stringify([image ?? "/products/placeholder.svg"]),
     },
   });
 

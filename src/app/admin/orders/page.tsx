@@ -72,7 +72,12 @@ export default async function AdminOrdersPage() {
             {orders.map((order) => (
               <tr key={order.id} className="transition hover:bg-surface-2/60">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-fg">{order.number}</p>
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="font-medium text-fg hover:text-brand-fg"
+                  >
+                    {order.number}
+                  </Link>
                   <p className="text-[11px] text-fg-subtle">
                     {formatDate(order.createdAt, dateLocale)}
                   </p>

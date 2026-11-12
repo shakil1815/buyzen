@@ -64,6 +64,8 @@ export default async function EditProductPage(
             sku: product.sku,
             categoryId: product.categoryId,
             featured: product.featured,
+            image: product.image,
+            gallery: JSON.parse(product.gallery || "[]") as string[],
           }}
         />
       </div>

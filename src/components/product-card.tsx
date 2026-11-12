@@ -39,14 +39,17 @@ export async function ProductCard({
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-lift">
       <div className="relative aspect-square overflow-hidden bg-surface-2">
-        <Link href={`/products/${product.slug}`} className="relative block h-full w-full">
+        <Link
+          href={`/products/${product.slug}`}
+          className="relative block h-full w-full"
+        >
           <Image
             src={product.image}
             alt={product.name}
             fill
             priority={priority}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition duration-300 group-hover:scale-[1.04]"
+            className="object-contain p-3 transition duration-300 group-hover:scale-[1.04]"
           />
         </Link>
 

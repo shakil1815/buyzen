@@ -37,6 +37,7 @@ export async function SiteFooter() {
       { href: "/help#returns", label: t("help.returns") },
       { href: "/help#contact", label: t("help.contactTitle") },
       { href: "/help#faq", label: t("help.faq") },
+      { href: "/credits", label: t("credits.title") },
     ],
   };
 

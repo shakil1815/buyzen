@@ -40,6 +40,10 @@ prisma/*.db-journal
 
 # generated artefacts
 /screenshots/
+/public/tmp-candidates/
+/public/candidates.html
+/public/products/*.svg
+/public/products/category-*.svg
 
 # typescript
 *.tsbuildinfo

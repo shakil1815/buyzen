@@ -16,6 +16,8 @@ export type ProductFormValues = {
   sku: string | null;
   categoryId: string;
   featured: boolean;
+  image?: string | null;
+  gallery?: string[];
 };
 
 export function ProductForm({
@@ -91,6 +93,50 @@ export function ProductForm({
               />
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="card p-5">
+        <h2 className="text-sm font-bold text-fg">{t("admin.product.photos")}</h2>
+        <p className="mt-1 text-xs text-fg-muted">{t("admin.product.photosHint")}</p>
+        <div className="mt-4 space-y-4">
+          <div>
+            <label className="label" htmlFor="image">
+              {t("admin.product.imageUrl")}
+            </label>
+            <input
+              id="image"
+              name="image"
+              defaultValue={product?.image ?? ""}
+              placeholder="/products/photos/my-product-1.jpg"
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="gallery">
+              {t("admin.product.galleryUrls")}
+            </label>
+            <input
+              id="gallery"
+              name="gallery"
+              defaultValue={(product?.gallery ?? []).join(", ")}
+              placeholder="/products/photos/a.jpg, /products/photos/b.jpg"
+              className="input"
+            />
+          </div>
+          {product?.image ? (
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={product.image}
+                alt=""
+                className="h-16 w-16 rounded-xl border border-line object-cover"
+              />
+              <p className="text-xs text-fg-subtle">
+                {t("admin.product.currentPhoto")}
+              </p>
+            </div>
+          ) : null}
         </div>
       </div>
 

@@ -617,12 +617,12 @@ async function main() {
           description: item.description,
           stock: item.stock,
           featured: item.featured ?? false,
-          image,
-          gallery: JSON.stringify(gallery),
           brand: item.brand,
           categoryId,
           reviewCount,
           rating,
+          // `image` / `gallery` are intentionally left untouched so that
+          // real product photos (npm run fetch:photos) survive a re-seed.
         },
         create: {
           name: item.name,
