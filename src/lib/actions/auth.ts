@@ -87,7 +87,16 @@ export async function loginAction(
     role: user.role,
   });
 
-  redirect(user.role === "ADMIN" ? "/admin" : "/account");
+  const adminRoles = [
+    "SUPER_ADMIN",
+    "ADMIN",
+    "ORDER_MANAGER",
+    "PRODUCT_MANAGER",
+    "SUPPORT",
+    "MARKETING_MANAGER",
+  ];
+
+  redirect(adminRoles.includes(user.role) ? "/admin" : "/account");
 }
 
 export async function logoutAction() {

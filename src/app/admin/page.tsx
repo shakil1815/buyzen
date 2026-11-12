@@ -1,346 +1,469 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  ArrowRight,
-  Boxes,
-  CircleDollarSign,
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  Banknote,
+  CalendarDays,
   Package,
   ShoppingBag,
-  Sparkles,
   TrendingUp,
-  TriangleAlert,
+  UserPlus,
   Users,
 } from "lucide-react";
-import { prisma } from "@/lib/prisma";
-import { formatDate, formatMoney } from "@/lib/format";
-import { getT } from "@/lib/i18n/server";
+import { requirePermission } from "@/lib/permissions";
+import {
+  RANGE_OPTIONS,
+  getBestSellingProducts,
+  getCategoryPerformance,
+  getCustomerSeries,
+  getOverview,
+  getPaymentDistribution,
+  getRevenueByDistrict,
+  getSalesSeries,
+  getTopCustomers,
+  growth,
+  resolveRange,
+} from "@/lib/admin/analytics";
 import { getCurrency } from "@/lib/settings";
 import { usdToBdtRate } from "@/lib/currency";
-import { SalesChart, type SalesPoint } from "@/components/admin/sales-chart";
+import { formatMoney } from "@/lib/format";
+import {
+  BarChart,
+  CHART_COLORS,
+  DonutChart,
+  HorizontalBars,
+  LineChart,
+} from "@/components/admin/charts";
+import { EmptyState, PageHeader, Panel, StatusBadge } from "@/components/admin/ui";
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-};
-
-function dayKey(date: Date) {
-  return date.toISOString().slice(0, 10);
+function Trend({ value }: { value: number }) {
+  const positive = value >= 0;
+  return (
+    <span
+      className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${
+        positive ? "text-success-fg" : "text-danger-fg"
+      }`}
+    >
+      {positive ? (
+        <ArrowUpRight className="h-3 w-3" />
+      ) : (
+        <ArrowDownRight className="h-3 w-3" />
+      )}
+      {Math.abs(value)}%
+    </span>
+  );
 }
 
-export default async function AdminDashboard() {
-  const [t, currency] = await Promise.all([getT(), getCurrency()]);
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  trend,
+}: {
+  icon: typeof Banknote;
+  label: string;
+  value: string;
+  hint?: string;
+  trend?: number;
+}) {
+  return (
+    <div className="card p-4">
+      <div className="flex items-center justify-between">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-soft text-brand-fg">
+          <Icon className="h-4.5 w-4.5" />
+        </span>
+        {trend !== undefined ? <Trend value={trend} /> : null}
+      </div>
+      <p className="mt-3 text-xl font-black tracking-tight text-fg-strong">
+        {value}
+      </p>
+      <p className="text-[11px] font-medium text-fg-muted">{label}</p>
+      {hint ? <p className="mt-0.5 text-[10px] text-fg-subtle">{hint}</p> : null}
+    </div>
+  );
+}
+
+export default async function AdminDashboard(props: PageProps<"/admin">) {
+  await requirePermission("dashboard.view");
+  const searchParams = (await props.searchParams) as Record<
+    string,
+    string | string[] | undefined
+  >;
+  const rangeKey = Array.isArray(searchParams.range)
+    ? searchParams.range[0]
+    : (searchParams.range ?? "30d");
+
+  const { range, granularity, label } = resolveRange(rangeKey);
+  const currency = await getCurrency();
   const rate = usdToBdtRate();
   const money = (cents: number) => formatMoney(cents, currency, rate);
 
-  const now = new Date();
-  const since = new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000);
-  since.setHours(0, 0, 0, 0);
-
   const [
-    revenue,
-    revenueWindow,
-    orderCount,
-    orderCountWindow,
-    productCount,
-    customerCount,
-    recentOrders,
-    lowStock,
-    windowOrders,
-    orderItems,
+    overview,
+    salesSeries,
+    customerSeries,
+    bestSellers,
+    categories,
+    paymentMix,
+    districts,
+    topCustomers,
   ] = await Promise.all([
-    prisma.order.aggregate({
-      _sum: { total: true },
-      where: { status: { not: "CANCELLED" } },
-    }),
-    prisma.order.aggregate({
-      _sum: { total: true },
-      where: { status: { not: "CANCELLED" }, createdAt: { gte: since } },
-    }),
-    prisma.order.count(),
-    prisma.order.count({ where: { createdAt: { gte: since } } }),
-    prisma.product.count(),
-    prisma.user.count({ where: { role: "CUSTOMER" } }),
-    prisma.order.findMany({
-      include: { items: true },
-      orderBy: { createdAt: "desc" },
-      take: 6,
-    }),
-    prisma.product.findMany({
-      where: { stock: { lte: 15 } },
-      orderBy: { stock: "asc" },
-      take: 6,
-    }),
-    prisma.order.findMany({
-      where: { createdAt: { gte: since } },
-      select: { createdAt: true, total: true, status: true },
-    }),
-    prisma.orderItem.groupBy({
-      by: ["productId", "name"],
-      _sum: { quantity: true, price: true },
-      orderBy: { _sum: { quantity: "desc" } },
-      take: 5,
-    }),
+    getOverview(range),
+    getSalesSeries(range, granularity),
+    getCustomerSeries(range, granularity),
+    getBestSellingProducts(6),
+    getCategoryPerformance(),
+    getPaymentDistribution(range),
+    getRevenueByDistrict(8),
+    getTopCustomers(6),
   ]);
 
-  // 14 day revenue series
-  const series: SalesPoint[] = [];
-  for (let index = 0; index < 14; index += 1) {
-    const day = new Date(since);
-    day.setDate(day.getDate() + index);
-    const key = dayKey(day);
-    const dayOrders = windowOrders.filter(
-      (order) => dayKey(order.createdAt) === key && order.status !== "CANCELLED",
-    );
-    series.push({
-      label: day.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      revenue: dayOrders.reduce((sum, order) => sum + order.total, 0),
-      orders: dayOrders.length,
-    });
-  }
+  const statusSlices = Object.entries(overview.orderStatus).map(
+    ([label, value], index) => ({
+      label: label.replace(/_/g, " ").toLowerCase(),
+      value,
+      color: CHART_COLORS[index % CHART_COLORS.length],
+    }),
+  );
 
-  const averageOrderValue =
-    orderCount > 0 ? Math.round((revenue._sum.total ?? 0) / orderCount) : 0;
-
-  const stats = [
-    {
-      icon: CircleDollarSign,
-      label: t("admin.revenue"),
-      value: money(revenue._sum.total ?? 0),
-      hint: `${money(revenueWindow._sum.total ?? 0)} · 14d`,
-    },
-    {
-      icon: ShoppingBag,
-      label: t("admin.orders"),
-      value: String(orderCount),
-      hint: `+${orderCountWindow} · 14d`,
-    },
-    {
-      icon: TrendingUp,
-      label: t("admin.aov"),
-      value: money(averageOrderValue),
-      hint: t("admin.aovHint"),
-    },
-    {
-      icon: Boxes,
-      label: t("admin.products"),
-      value: String(productCount),
-      hint: `${lowStock.length} ${t("admin.lowStockShort")}`,
-    },
-    {
-      icon: Users,
-      label: t("admin.customers"),
-      value: String(customerCount),
-      hint: t("admin.registered"),
-    },
-  ];
+  const paymentSlices = paymentMix.map((slice, index) => ({
+    label: slice.label,
+    value: slice.value,
+    color: CHART_COLORS[index % CHART_COLORS.length],
+  }));
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-fg-strong">
-            {t("admin.dashboard.title")}
-          </h1>
-          <p className="mt-1 text-sm text-fg-muted">
-            {t("admin.dashboard.body")}
-          </p>
-        </div>
-        <Link href="/admin/products/new" className="btn btn-primary">
-          {t("admin.newProduct")}
-        </Link>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Dashboard"
+        description={`Live business performance · ${label}`}
+        actions={
+          <Link href="/admin/reports" className="btn btn-outline">
+            Export reports
+          </Link>
+        }
+      />
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {stats.map((stat) => (
-          <div key={stat.label} className="card p-5">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-soft text-brand-fg">
-              <stat.icon className="h-5 w-5" />
-            </span>
-            <p className="mt-3 text-2xl font-black tracking-tight text-fg-strong">
-              {stat.value}
-            </p>
-            <p className="text-xs font-medium text-fg">{stat.label}</p>
-            <p className="mt-0.5 text-[11px] text-fg-subtle">{stat.hint}</p>
-          </div>
+      {/* Range filter */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-fg-muted">
+          <CalendarDays className="h-3.5 w-3.5" /> Period
+        </span>
+        {RANGE_OPTIONS.map((option) => (
+          <Link
+            key={option.key}
+            href={`/admin?range=${option.key}`}
+            className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+              rangeKey === option.key
+                ? "border-brand-600 bg-brand-600 text-white"
+                : "border-line bg-surface text-fg-muted hover:bg-surface-2"
+            }`}
+          >
+            {option.label}
+          </Link>
         ))}
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <section className="card p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-fg">{t("admin.sales")}</h2>
-            <span className="badge bg-surface-3 text-fg-muted">14d</span>
-          </div>
-          <div className="mt-5">
-            <SalesChart points={series} currency={currency} rate={rate} />
-          </div>
-        </section>
-
-        <section className="card p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-fg">{t("admin.topProducts")}</h2>
-            <Link
-              href="/admin/products"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-fg"
-            >
-              {t("admin.manage")} <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <ul className="mt-4 divide-y divide-line">
-            {orderItems.length === 0 ? (
-              <li className="py-6 text-center text-sm text-fg-muted">
-                {t("admin.noSales")}
-              </li>
-            ) : null}
-            {orderItems.map((item, index) => (
-              <li key={`${item.productId}-${index}`} className="flex items-center gap-3 py-3">
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-surface-3 text-xs font-bold text-fg-muted">
-                  {index + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-fg">
-                    {item.name}
-                  </p>
-                  <p className="text-[11px] text-fg-subtle">
-                    {item._sum.quantity} {t("admin.unitsSold")}
-                  </p>
-                </div>
-                <p className="text-sm font-semibold text-fg">
-                  {money((item._sum.quantity ?? 0) * (item._sum.price ?? 0))}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* KPIs */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+        <StatCard
+          icon={Banknote}
+          label="Total revenue"
+          value={money(overview.revenue)}
+          trend={growth(overview.revenue, overview.previousRevenue)}
+        />
+        <StatCard
+          icon={ShoppingBag}
+          label="Total sales (units)"
+          value={String(overview.sales)}
+          trend={growth(overview.sales, overview.previousSales)}
+        />
+        <StatCard
+          icon={Package}
+          label="Total orders"
+          value={String(overview.orders)}
+          trend={growth(overview.orders, overview.previousOrders)}
+        />
+        <StatCard
+          icon={Users}
+          label="Total customers"
+          value={String(overview.customers)}
+          hint={`${overview.activeCustomers} active in period`}
+        />
+        <StatCard
+          icon={UserPlus}
+          label="New customers"
+          value={String(overview.newCustomers)}
+          hint="registered in period"
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="Average order value"
+          value={money(overview.averageOrderValue)}
+        />
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <section className="card p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-fg">{t("admin.recentOrders")}</h2>
-            <Link
-              href="/admin/orders"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-fg"
-            >
-              {t("admin.allOrders")} <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <ul className="mt-4 divide-y divide-line">
-            {recentOrders.map((order) => (
-              <li key={order.id} className="flex items-center justify-between gap-3 py-3">
-                <div className="min-w-0">
-                  <Link
-                    href={`/admin/orders/${order.id}`}
-                    className="truncate text-sm font-medium text-fg hover:text-brand-fg"
-                  >
-                    {order.number}
-                  </Link>
-                  <p className="text-[11px] text-fg-subtle">
-                    {order.email} · {formatDate(order.createdAt)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-fg-strong">
-                    {money(order.total)}
-                  </p>
-                  <span className="badge bg-surface-3 text-fg-muted">
-                    {order.status}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* Status + payments */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Panel title="Order status distribution">
+          {statusSlices.length ? (
+            <DonutChart
+              slices={statusSlices}
+              currency={currency}
+              rate={rate}
+            />
+          ) : (
+            <EmptyState title="No orders in this period" />
+          )}
+        </Panel>
 
-        <section className="card p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-fg">
-              <TriangleAlert className="h-4 w-4 text-warn-fg" />
-              {t("admin.lowStock")}
-            </h2>
-            <Link
-              href="/admin/products"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-fg"
-            >
-              {t("admin.manage")} <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <ul className="mt-4 divide-y divide-line">
-            {lowStock.length === 0 ? (
-              <li className="py-6 text-center text-sm text-fg-muted">
-                {t("admin.stockOk")}
-              </li>
-            ) : null}
-            {lowStock.map((product) => (
-              <li key={product.id} className="flex items-center justify-between gap-3 py-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-fg">
-                    {product.name}
-                  </p>
-                  <p className="text-[11px] text-fg-subtle">{product.sku}</p>
-                </div>
-                <span
-                  className={`badge ${
-                    product.stock === 0
-                      ? "bg-danger-soft text-danger-fg"
-                      : "bg-warn-soft text-warn-fg"
-                  }`}
+        <Panel title="Payment methods">
+          {paymentSlices.length ? (
+            <DonutChart
+              slices={paymentSlices}
+              currency={currency}
+              rate={rate}
+            />
+          ) : (
+            <EmptyState title="No payments in this period" />
+          )}
+        </Panel>
+
+        <Panel title="Attention required">
+          <ul className="space-y-2.5 text-sm">
+            {[
+              {
+                label: "Pending payments to verify",
+                value: overview.pendingPayments,
+                href: "/admin/payments?status=PENDING",
+                tone: "amber" as const,
+              },
+              {
+                label: "Successful payments",
+                value: overview.successfulPayments,
+                href: "/admin/payments?status=VERIFIED",
+                tone: "green" as const,
+              },
+              {
+                label: "Refund requests",
+                value: overview.refundRequests,
+                href: "/admin/refunds",
+                tone: "red" as const,
+              },
+              {
+                label: "Low stock products",
+                value: overview.lowStockProducts,
+                href: "/admin/inventory",
+                tone: "amber" as const,
+              },
+              {
+                label: "Out of stock products",
+                value: overview.outOfStockProducts,
+                href: "/admin/inventory?filter=out",
+                tone: "red" as const,
+              },
+              {
+                label: "Cancelled orders",
+                value: overview.orderStatus.CANCELLED ?? 0,
+                href: "/admin/orders?status=CANCELLED",
+                tone: "grey" as const,
+              },
+            ].map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-line px-3 py-2 transition hover:bg-surface-2"
                 >
-                  {product.stock === 0
-                    ? t("admin.outOfStock")
-                    : t("admin.products.left", { count: product.stock })}
-                </span>
+                  <span className="text-fg-muted">{item.label}</span>
+                  <StatusBadge tone={item.tone}>{item.value}</StatusBadge>
+                </Link>
               </li>
             ))}
           </ul>
-        </section>
+        </Panel>
       </div>
 
-      <section className="card mt-6 p-5">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-fg">
-          <Sparkles className="h-4 w-4 text-brand-fg" />
-          {t("admin.guide.title")}
-        </h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            {
-              href: "/admin/products",
-              icon: Package,
-              title: t("admin.guide.products"),
-              body: t("admin.guide.productsBody"),
-            },
-            {
-              href: "/admin/orders",
-              icon: ShoppingBag,
-              title: t("admin.guide.orders"),
-              body: t("admin.guide.ordersBody"),
-            },
-            {
-              href: "/admin/coupons",
-              icon: Sparkles,
-              title: t("admin.guide.coupons"),
-              body: t("admin.guide.couponsBody"),
-            },
-            {
-              href: "/admin/customers",
-              icon: Users,
-              title: t("admin.guide.customers"),
-              body: t("admin.guide.customersBody"),
-            },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="group rounded-xl border border-line bg-surface-2 p-4 transition hover:border-brand-200 hover:bg-brand-soft"
-            >
-              <item.icon className="h-4 w-4 text-brand-fg" />
-              <p className="mt-2 text-sm font-semibold text-fg">{item.title}</p>
-              <p className="mt-1 text-xs leading-relaxed text-fg-muted">
-                {item.body}
+      {/* Trends */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel
+          title="Sales trend"
+          description={`Revenue and order volume · ${label}`}
+        >
+          <BarChart
+            points={salesSeries.map((point) => ({
+              label: point.label,
+              value: point.revenue,
+              hint: `${point.orders} orders`,
+            }))}
+            currency={currency}
+            rate={rate}
+          />
+          <div className="mt-4 grid grid-cols-3 gap-3 border-t border-line pt-4 text-center">
+            <div>
+              <p className="text-lg font-black text-fg-strong">
+                {money(overview.revenue)}
               </p>
+              <p className="text-[10px] uppercase tracking-wide text-fg-subtle">
+                Revenue
+              </p>
+            </div>
+            <div>
+              <p className="text-lg font-black text-fg-strong">
+                {overview.orders}
+              </p>
+              <p className="text-[10px] uppercase tracking-wide text-fg-subtle">
+                Orders
+              </p>
+            </div>
+            <div>
+              <p className="text-lg font-black text-fg-strong">
+                {overview.customers}
+              </p>
+              <p className="text-[10px] uppercase tracking-wide text-fg-subtle">
+                Customers
+              </p>
+            </div>
+          </div>
+        </Panel>
+
+        <Panel
+          title="Customer registration growth"
+          description="New accounts created per bucket"
+        >
+          <LineChart
+            points={customerSeries.map((point) => ({
+              label: point.label,
+              value: point.orders,
+            }))}
+            currency={currency}
+            rate={rate}
+          />
+        </Panel>
+      </div>
+
+      {/* Breakdowns */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel
+          title="Best selling products"
+          actions={
+            <Link
+              href="/admin/products"
+              className="text-xs font-semibold text-brand-fg"
+            >
+              Manage
             </Link>
-          ))}
-        </div>
-      </section>
+          }
+        >
+          {bestSellers.length ? (
+            <HorizontalBars
+              currency={currency}
+              rate={rate}
+              points={bestSellers.map((product) => ({
+                label: product.name,
+                value: product.revenue,
+                hint: `${product.quantity} sold · ${money(product.revenue)}`,
+              }))}
+            />
+          ) : (
+            <EmptyState title="No sales yet" />
+          )}
+        </Panel>
+
+        <Panel title="Most popular categories">
+          {categories.length ? (
+            <HorizontalBars
+              currency={currency}
+              rate={rate}
+              points={categories.map((category) => ({
+                label: category.label,
+                value: category.value,
+                hint: `${category.value} units`,
+              }))}
+            />
+          ) : (
+            <EmptyState title="No category data yet" />
+          )}
+        </Panel>
+
+        <Panel
+          title="Revenue by district"
+          actions={
+            <Link
+              href="/admin/locations"
+              className="text-xs font-semibold text-brand-fg"
+            >
+              Location analytics
+            </Link>
+          }
+        >
+          {districts.length ? (
+            <HorizontalBars
+              currency={currency}
+              rate={rate}
+              points={districts.map((district) => ({
+                label: district.label,
+                value: district.value,
+                hint: `${district.orders} orders`,
+              }))}
+            />
+          ) : (
+            <EmptyState title="No delivery data yet" />
+          )}
+        </Panel>
+
+        <Panel
+          title="Top customers by purchase value"
+          actions={
+            <Link
+              href="/admin/customers"
+              className="text-xs font-semibold text-brand-fg"
+            >
+              All customers
+            </Link>
+          }
+        >
+          {topCustomers.length ? (
+            <ul className="space-y-2.5">
+              {topCustomers.map((customer, index) => (
+                <li
+                  key={`${customer.email}-${index}`}
+                  className="flex items-center gap-3 rounded-lg border border-line px-3 py-2"
+                >
+                  <span className="grid h-7 w-7 place-items-center rounded-lg bg-surface-3 text-xs font-bold text-fg-muted">
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-fg">
+                      {customer.name}
+                    </p>
+                    <p className="truncate text-[11px] text-fg-subtle">
+                      {customer.email}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-fg">
+                      {money(customer.revenue)}
+                    </p>
+                    <p className="text-[10px] text-fg-subtle">
+                      {customer.orders} orders
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState title="No customer orders yet" />
+          )}
+        </Panel>
+      </div>
+
+      <p className="flex items-center gap-2 text-[11px] text-fg-subtle">
+        <AlertTriangle className="h-3.5 w-3.5" />
+        Every figure on this page is calculated from live database records for
+        the selected period.
+      </p>
     </div>
   );
 }

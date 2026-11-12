@@ -3,25 +3,36 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { ProductForm } from "@/components/product-form";
-import { getT } from "@/lib/i18n/server";
+import { ProductForm } from "@/components/admin/product-form";
+import { requirePermission } from "@/lib/permissions";
 
 export const metadata: Metadata = {
   title: "Edit product",
 };
 
+function parseList(value: string | null) {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? (parsed as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function EditProductPage(
   props: PageProps<"/admin/products/[id]">,
 ) {
+  await requirePermission("products.manage");
   const { id } = await props.params;
 
-  const [product, categories, t] = await Promise.all([
+  const [product, categories, brands] = await Promise.all([
     prisma.product.findUnique({ where: { id } }),
     prisma.category.findMany({
       orderBy: { name: "asc" },
       select: { id: true, name: true },
     }),
-    getT(),
+    prisma.brand.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
   ]);
 
   if (!product) notFound();
@@ -33,18 +44,18 @@ export default async function EditProductPage(
           href="/admin/products"
           className="inline-flex items-center gap-1 text-sm font-semibold text-fg-muted hover:text-fg"
         >
-          <ArrowLeft className="h-4 w-4" /> {t("common.back")}
+          <ArrowLeft className="h-4 w-4" /> Back to products
         </Link>
         <Link
           href={`/products/${product.slug}`}
           className="inline-flex items-center gap-1 text-sm font-semibold text-brand-fg hover:text-brand-600"
         >
-          {t("admin.product.viewInStore")} <ExternalLink className="h-3.5 w-3.5" />
+          View in store <ExternalLink className="h-3.5 w-3.5" />
         </Link>
       </div>
 
       <h1 className="mt-3 text-2xl font-black tracking-tight text-fg-strong">
-        {t("admin.product.edit.title")}
+        Edit product
       </h1>
       <p className="mt-1 text-sm text-fg-muted">
         {product.name} · {product.sku}
@@ -53,19 +64,25 @@ export default async function EditProductPage(
       <div className="mt-6 max-w-3xl">
         <ProductForm
           categories={categories}
+          brands={brands}
           product={{
             id: product.id,
             name: product.name,
             description: product.description,
             price: product.price,
             compareAtPrice: product.compareAtPrice,
+            cost: product.cost,
             stock: product.stock,
+            lowStockThreshold: product.lowStockThreshold,
             brand: product.brand,
             sku: product.sku,
             categoryId: product.categoryId,
             featured: product.featured,
             image: product.image,
-            gallery: JSON.parse(product.gallery || "[]") as string[],
+            gallery: parseList(product.gallery),
+            sizes: parseList(product.sizes),
+            colors: parseList(product.colors),
+            variants: product.variants ? [product.variants] : [],
           }}
         />
       </div>

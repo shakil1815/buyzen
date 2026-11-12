@@ -651,12 +651,34 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: "admin@shopfront.dev" },
-    update: { role: "ADMIN", passwordHash: adminPassword },
+    update: { role: "SUPER_ADMIN", passwordHash: adminPassword },
     create: {
       email: "admin@shopfront.dev",
       name: "Ada Admin",
       passwordHash: adminPassword,
-      role: "ADMIN",
+      role: "SUPER_ADMIN",
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "orders@shopfront.dev" },
+    update: { role: "ORDER_MANAGER", passwordHash: adminPassword },
+    create: {
+      email: "orders@shopfront.dev",
+      name: "Omar Orders",
+      passwordHash: adminPassword,
+      role: "ORDER_MANAGER",
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "support@shopfront.dev" },
+    update: { role: "SUPPORT", passwordHash: adminPassword },
+    create: {
+      email: "support@shopfront.dev",
+      name: "Sana Support",
+      passwordHash: adminPassword,
+      role: "SUPPORT",
     },
   });
 
@@ -742,6 +764,168 @@ async function main() {
       update: {},
       create: { userId: customer.id, productId: firstProduct.id },
     });
+  }
+
+  // Admin roles (mirrors src/lib/permissions.ts) ---------------------------
+  const roles = [
+    { slug: "SUPER_ADMIN", name: "Super Admin" },
+    { slug: "ADMIN", name: "Admin" },
+    { slug: "ORDER_MANAGER", name: "Order Manager" },
+    { slug: "PRODUCT_MANAGER", name: "Product Manager" },
+    { slug: "SUPPORT", name: "Customer Support" },
+    { slug: "MARKETING_MANAGER", name: "Marketing Manager" },
+  ];
+  for (const role of roles) {
+    await prisma.adminRole.upsert({
+      where: { slug: role.slug },
+      update: { name: role.name },
+      create: {
+        ...role,
+        permissions: "[]",
+        description: `Built-in ${role.name} role`,
+        isSystem: true,
+      },
+    });
+  }
+
+  // Demo marketing + content ----------------------------------------------
+  const bannerCount = await prisma.banner.count();
+  if (bannerCount === 0) {
+    await prisma.banner.createMany({
+      data: [
+        {
+          title: "Eid tech week",
+          subtitle: "Up to 25% off selected audio and wearables",
+          body: "Use code WELCOME10 for an extra 10% on your first order.",
+          link: "/products?deals=1",
+          position: "home",
+          active: true,
+        },
+        {
+          title: "Free delivery over ৳15,000",
+          subtitle: "Across Dhaka and all 64 districts",
+          link: "/help#shipping",
+          position: "sidebar",
+          active: true,
+        },
+      ],
+    });
+  }
+
+  const pageCount = await prisma.pageContent.count();
+  if (pageCount === 0) {
+    await prisma.pageContent.createMany({
+      data: [
+        {
+          slug: "about",
+          title: "About Us",
+          body: "ShopFront curates premium tech, audio, gaming and home goods for Bangladesh. We source directly, ship nationwide and support every order from one team.",
+        },
+        {
+          slug: "faq",
+          title: "Frequently Asked Questions",
+          body: "Delivery takes 2-5 business days, is free over ৳15,000, and every unopened item can be returned within 30 days.",
+        },
+        {
+          slug: "returns",
+          title: "Return and Refund Policy",
+          body: "Request a return within 30 days of delivery. We email a prepaid label and refund the original payment method within 3-5 days of the parcel being scanned.",
+        },
+      ],
+    });
+  }
+
+  const settings = [
+    ["site_name", "ShopFront", "site"],
+    ["contact_email", "support@shopfront.dev", "contact"],
+    ["contact_phone", "+880 1710-000000", "contact"],
+    ["contact_address", "42 Gulshan Avenue, Dhaka 1212, Bangladesh", "contact"],
+    ["seo_title", "ShopFront — premium tech & lifestyle", "seo"],
+    [
+      "seo_description",
+      "Premium audio, computing, gaming and home gear with free delivery over ৳15,000.",
+      "seo",
+    ],
+    ["shipping_flat_rate", "9.90", "shipping"],
+    ["shipping_free_threshold", "150", "shipping"],
+    ["tax_rate", "8", "tax"],
+    ["currency_default", "BDT", "currency"],
+    ["language_default", "bn", "language"],
+    ["usd_to_bdt_rate", "120", "currency"],
+    ["support_email", "support@shopfront.dev", "support"],
+    ["invoice_prefix", "INV", "invoice"],
+    ["session_timeout_minutes", "60", "security"],
+    ["max_login_attempts", "5", "security"],
+    ["require_2fa", "false", "security"],
+    ["mask_sensitive_data", "true", "security"],
+    ["segment_new_days", "30", "segmentation"],
+    ["segment_inactive_days", "90", "segmentation"],
+    ["segment_regular_orders", "3", "segmentation"],
+    ["segment_high_value_cents", "50000", "segmentation"],
+  ];
+  for (const [key, value, group] of settings) {
+    await prisma.setting.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value, group },
+    });
+  }
+
+  // Demo location data so the admin map has something to show ---------------
+  const locations = [
+    ["Dhaka", "Dhaka", "Dhaka"],
+    ["Dhaka", "Dhaka", "Gulshan"],
+    ["Dhaka", "Dhaka", "Dhanmondi"],
+    ["Chattogram", "Chattogram", "Chattogram"],
+    ["Chattogram", "Chattogram", "Cox's Bazar"],
+    ["Sylhet", "Sylhet", "Sylhet"],
+    ["Rajshahi", "Rajshahi", "Rajshahi"],
+    ["Khulna", "Khulna", "Khulna"],
+    ["Mymensingh", "Mymensingh", "Mymensingh"],
+    ["Rangpur", "Rangpur", "Rangpur"],
+    ["Barishal", "Barishal", "Barishal"],
+  ];
+
+  const customers = await prisma.user.findMany({
+    where: { role: "CUSTOMER" },
+    select: { id: true },
+  });
+  for (const [index, customer] of customers.entries()) {
+    const [division, district, city] = locations[index % locations.length];
+    await prisma.user.update({
+      where: { id: customer.id },
+      data: {
+        division,
+        district,
+        city,
+        country: "Bangladesh",
+        phone: `+880171${String(1000000 + index).slice(-7)}`,
+        locationConsent: index % 2 === 0,
+        lastActiveAt: new Date(Date.now() - index * 36e5 * 9),
+      },
+    });
+  }
+
+  const ticketCount = await prisma.supportTicket.count();
+  if (ticketCount === 0 && customers[0]) {
+    const ticket = await prisma.supportTicket.create({
+      data: {
+        number: "TKT-1001",
+        userId: customers[0].id,
+        subject: "Wrong item delivered",
+        category: "order",
+        priority: "HIGH",
+        status: "OPEN",
+        messages: {
+          create: {
+            authorType: "CUSTOMER",
+            authorId: customers[0].id,
+            body: "I ordered the wireless earbuds but received the speaker. Can I exchange it?",
+          },
+        },
+      },
+    });
+    console.log(`Seeded support ticket ${ticket.number}`);
   }
 
   console.log(`Seeded ${allProducts.length} products, ${categories.length} categories.`);

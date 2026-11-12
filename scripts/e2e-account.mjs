@@ -74,11 +74,13 @@ try {
   await page.waitForTimeout(1500);
 
   await page.goto(`${BASE}/checkout`, { waitUntil: "networkidle" });
+  await page.waitForSelector("#email", { timeout: 15000 });
   await page.fill("#email", email);
   await page.fill("#shippingName", "Sam Shopper");
   await page.fill("#address1", "12 Market Lane");
   await page.fill("#city", "Utrecht");
   await page.fill("#postalCode", "3511LN");
+  await page.check('input[name="paymentMethod"][value="card"]');
   await page.fill("#cardNumber", "4111111111111111");
   await page.fill("#expiry", "11/29");
   await page.fill("#cvc", "456");

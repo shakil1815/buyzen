@@ -2,13 +2,16 @@
 
 import { useActionState } from "react";
 import { AlertCircle, Check } from "lucide-react";
-import { createCouponAction, type AdminState } from "@/lib/actions/admin";
+import {
+  saveCouponAction,
+  type GrowthState as AdminState,
+} from "@/lib/actions/admin-growth";
 import { useI18n } from "@/components/i18n-provider";
 
 export function CouponForm() {
   const { t } = useI18n();
   const [state, formAction, pending] = useActionState<AdminState, FormData>(
-    createCouponAction,
+    saveCouponAction,
     {},
   );
 

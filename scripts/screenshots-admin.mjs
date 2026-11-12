@@ -1,35 +1,57 @@
 import { chromium } from "playwright-core";
+import { mkdirSync } from "node:fs";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const EDGE = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+const OUT = "screenshots";
+
+mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch({ executablePath: EDGE, headless: true });
-const page = await browser.newPage({ viewport: { width: 1600, height: 1200 } });
+const context = await browser.newContext({ viewport: { width: 1600, height: 1100 } });
+const page = await context.newPage();
 
-// Catalogue contact sheet (light)
-await page.goto(`${BASE}/products`, { waitUntil: "networkidle" });
-await page.waitForTimeout(800);
-await page.screenshot({ path: "screenshots/contact-sheet.png", fullPage: true });
-
-// Admin dashboard
 await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
 await page.fill("#email", "admin@shopfront.dev");
 await page.fill("#password", "admin12345");
 await page.getByRole("button", { name: "Sign in" }).click();
 await page.waitForURL(/\/admin/, { timeout: 20000 });
-await page.waitForTimeout(1200);
-await page.screenshot({ path: "screenshots/admin-dashboard.png", fullPage: true });
-
-// Admin product edit form
-await page.goto(`${BASE}/admin/products`, { waitUntil: "networkidle" });
-await page.locator('a[aria-label^="Edit"]').first().click();
 await page.waitForTimeout(1500);
-await page.screenshot({ path: "screenshots/admin-product-form.png", fullPage: true });
 
-// Credits page
-await page.goto(`${BASE}/credits`, { waitUntil: "networkidle" });
-await page.waitForTimeout(800);
-await page.screenshot({ path: "screenshots/credits.png" });
+const pages = [
+  ["admin-dashboard", "/admin"],
+  ["admin-customers", "/admin/customers"],
+  ["admin-segments", "/admin/segments"],
+  ["admin-locations", "/admin/locations"],
+  ["admin-orders", "/admin/orders"],
+  ["admin-payments", "/admin/payments"],
+  ["admin-inventory", "/admin/inventory"],
+  ["admin-marketing", "/admin/marketing"],
+  ["admin-reports", "/admin/reports"],
+  ["admin-settings", "/admin/settings"],
+];
 
-console.log("captured admin + credits");
+for (const [name, path] of pages) {
+  await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(900);
+  await page.screenshot({ path: `${OUT}/${name}.png` });
+  console.log(`captured ${name}`);
+}
+
+// Mobile view of the admin console
+const mobile = await browser.newContext({
+  viewport: { width: 390, height: 844 },
+  isMobile: true,
+  hasTouch: true,
+});
+const mobilePage = await mobile.newPage();
+await mobilePage.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+await mobilePage.fill("#email", "admin@shopfront.dev");
+await mobilePage.fill("#password", "admin12345");
+await mobilePage.getByRole("button", { name: "Sign in" }).click();
+await mobilePage.waitForURL(/\/admin/, { timeout: 20000 });
+await mobilePage.waitForTimeout(1200);
+await mobilePage.screenshot({ path: `${OUT}/admin-mobile.png` });
+console.log("captured admin-mobile");
+
 await browser.close();

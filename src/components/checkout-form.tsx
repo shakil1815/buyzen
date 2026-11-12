@@ -7,6 +7,7 @@ import {
   startStripeCheckout,
   type CheckoutState,
 } from "@/lib/actions/checkout";
+import { PAYMENT_METHOD_OPTIONS } from "@/lib/orders";
 import { useI18n } from "@/components/i18n-provider";
 import { formatMoney } from "@/lib/format";
 
@@ -141,6 +142,60 @@ export function CheckoutForm({
           </span>
         </div>
 
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {PAYMENT_METHOD_OPTIONS.map((option) => (
+            <label
+              key={option.value}
+              className="flex cursor-pointer items-start gap-2 rounded-xl border border-line px-3 py-2.5 transition has-[:checked]:border-brand-500 has-[:checked]:bg-brand-soft"
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                value={option.value}
+                defaultChecked={option.value === "cod"}
+                className="mt-0.5 h-4 w-4 border-line-strong text-brand-fg"
+              />
+              <span>
+                <span className="block text-sm font-semibold text-fg">
+                  {option.label}
+                </span>
+                <span className="block text-[11px] text-fg-muted">
+                  {option.hint}
+                </span>
+              </span>
+            </label>
+          ))}
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label" htmlFor="paymentReference">
+              Transaction ID
+            </label>
+            <input
+              id="paymentReference"
+              name="paymentReference"
+              placeholder="e.g. 8HGF2K9L"
+              className="input"
+            />
+            <p className="mt-1.5 text-[11px] text-fg-subtle">
+              Required for bKash, Nagad and Rocket so our team can verify the
+              payment before dispatch.
+            </p>
+          </div>
+          <div>
+            <label className="label" htmlFor="senderNumber">
+              Sender number
+            </label>
+            <input
+              id="senderNumber"
+              name="senderNumber"
+              placeholder="01XXXXXXXXX"
+              className="input"
+            />
+          </div>
+        </div>
+
         {stripeEnabled ? (
           <div className="mt-4 rounded-xl border border-line bg-surface-2 p-4 text-sm text-fg-muted">
             {t("checkout.stripeNote")}
@@ -156,7 +211,6 @@ export function CheckoutForm({
                 <input
                   id="cardNumber"
                   name="cardNumber"
-                  required
                   inputMode="numeric"
                   autoComplete="cc-number"
                   placeholder="4242 4242 4242 4242"
@@ -171,7 +225,6 @@ export function CheckoutForm({
               <input
                 id="expiry"
                 name="expiry"
-                required
                 placeholder="12/29"
                 autoComplete="cc-exp"
                 className="input"
@@ -184,7 +237,6 @@ export function CheckoutForm({
               <input
                 id="cvc"
                 name="cvc"
-                required
                 inputMode="numeric"
                 placeholder="123"
                 autoComplete="cc-csc"

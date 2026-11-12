@@ -11,26 +11,110 @@ datasource db {
 // stored as strings with the allowed values documented next to them.
 
 model User {
-  id           String         @id @default(cuid())
-  email        String         @unique
+  id           String   @id @default(cuid())
+  email        String   @unique
   passwordHash String
   name         String
-  // "CUSTOMER" | "ADMIN"
-  role         String         @default("CUSTOMER")
-  createdAt    DateTime       @default(now())
+  // "CUSTOMER" | "SUPER_ADMIN" | "ADMIN" | "ORDER_MANAGER" | "PRODUCT_MANAGER"
+  // | "SUPPORT" | "MARKETING_MANAGER"
+  role         String   @default("CUSTOMER")
+  // "ACTIVE" | "BLOCKED"
+  status       String   @default("ACTIVE")
+  blockReason  String?
+  blockedAt    DateTime?
+  phone        String?
+  avatarUrl    String?
+  addressLine  String?
+  city         String?
+  district     String?
+  division     String?
+  country      String   @default("Bangladesh")
+  postalCode   String?
+  // Explicit, opt-in location consent. Nothing is collected without it.
+  locationConsent Boolean @default(false)
+  latitude      Float?
+  longitude     Float?
+  locationUpdatedAt DateTime?
+  lastActiveAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
   orders       Order[]
   reviews      Review[]
   wishlist     WishlistItem[]
   carts        Cart[]
+  addresses    Address[]
+  coupons      Coupon[]
+  tickets      SupportTicket[]
+  activities   ActivityLog[]
+  notifications Notification[]
+
+  @@index([email])
+  @@index([name])
+  @@index([status])
+  @@index([role])
+  @@index([createdAt])
+  @@index([district])
+  @@index([division])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String   @default("Home")
+  name       String
+  phone      String?
+  line1      String
+  line2      String?
+  city       String
+  district   String?
+  division   String?
+  postalCode String?
+  country    String   @default("Bangladesh")
+  isDefault  Boolean  @default(false)
+  // Approximate, consented coordinates only (never precise device tracking).
+  latitude   Float?
+  longitude  Float?
+  locationConsent Boolean @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([district])
+  @@index([city])
+}
+
+model AdminRole {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  permissions String   @default("[]")
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
 }
 
 model Category {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
-  slug        String    @unique
+  slug        String     @unique
   description String?
   image       String?
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryTree")
   products    Product[]
+
+  @@index([parentId])
+}
+
+model Brand {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  logoUrl   String?
+  products  Product[]
+
+  @@index([name])
 }
 
 model Product {
@@ -38,15 +122,23 @@ model Product {
   name           String
   slug           String         @unique
   description    String
-  // price + compareAtPrice are stored in cents
   price          Int
   compareAtPrice Int?
+  cost           Int?
+  taxRate        Float          @default(0)
   sku            String         @unique
   brand          String?
+  brandId        String?
+  brandEntity    Brand?         @relation(fields: [brandId], references: [id], onDelete: SetNull)
   image          String
   gallery        String         @default("[]")
+  sizes          String         @default("[]")
+  colors         String         @default("[]")
+  variants       String         @default("[]")
   stock          Int            @default(0)
+  lowStockThreshold Int          @default(10)
   featured       Boolean        @default(false)
+  views          Int            @default(0)
   rating         Float          @default(0)
   reviewCount    Int            @default(0)
   categoryId     String
@@ -57,6 +149,12 @@ model Product {
   cartItems      CartItem[]
   orderItems     OrderItem[]
   wishlistItems  WishlistItem[]
+  flashSaleItems FlashSale[]
+
+  @@index([categoryId])
+  @@index([stock])
+  @@index([featured])
+  @@index([brandId])
 }
 
 model Review {
@@ -64,6 +162,11 @@ model Review {
   rating    Int
   title     String
   body      String
+  // "PENDING" | "APPROVED" | "REJECTED"
+  status    String   @default("APPROVED")
+  reported  Boolean  @default(false)
+  verifiedPurchase Boolean @default(false)
+  adminNote String?
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   userId    String
@@ -71,17 +174,22 @@ model Review {
   createdAt DateTime @default(now())
 
   @@unique([productId, userId])
+  @@index([status])
+  @@index([reported])
 }
 
 model Cart {
   id         String     @id @default(cuid())
   sessionId  String?    @unique
   userId     String?
-  couponCode String?
   user       User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  couponCode String?
   items      CartItem[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([updatedAt])
 }
 
 model CartItem {
@@ -98,6 +206,7 @@ model CartItem {
 model Order {
   id           String      @id @default(cuid())
   number       String      @unique
+  invoiceNumber String?
   userId       String?
   user         User?       @relation(fields: [userId], references: [id])
   email        String
@@ -105,9 +214,11 @@ model Order {
   address1     String
   address2     String?
   city         String
+  district     String?
+  division     String?
   state        String?
   postalCode   String
-  country      String
+  country      String      @default("Bangladesh")
   phone        String?
   subtotal     Int
   discount     Int         @default(0)
@@ -115,13 +226,38 @@ model Order {
   tax          Int         @default(0)
   total        Int
   couponCode   String?
-  // "PENDING" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
-  status       String      @default("PAID")
-  paymentMethod String     @default("card")
+  // "PENDING" | "CONFIRMED" | "PROCESSING" | "PACKED" | "SHIPPED"
+  // | "OUT_FOR_DELIVERY" | "DELIVERED" | "CANCELLED" | "RETURNED"
+  status       String      @default("PENDING")
+  // "PENDING" | "PAID" | "FAILED" | "REFUNDED"
+  paymentStatus String     @default("PENDING")
+  // "card" | "bkash" | "nagad" | "rocket" | "cod"
+  paymentMethod String     @default("cod")
   paymentRef   String?
+  courierName  String?
+  courierPhone String?
+  trackingNumber String?
+  cancelReason String?
+  refundedAmount Int        @default(0)
   notes        String?
+  confirmedAt  DateTime?
+  packedAt     DateTime?
+  shippedAt    DateTime?
+  deliveredAt  DateTime?
   createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now()) @updatedAt
   items        OrderItem[]
+  events       OrderEvent[]
+  history      OrderStatusHistory[]
+  payments     Payment[]
+  refunds      RefundRequest[]
+
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@index([userId])
+  @@index([district])
+  @@index([division])
 }
 
 model OrderItem {
@@ -135,22 +271,217 @@ model OrderItem {
   image     String
   price     Int
   quantity  Int
+  variant   String?
+}
+
+model OrderEvent {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      String
+  message   String
+  actor     String   @default("system")
+  meta      String   @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model OrderStatusHistory {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  from      String
+  to        String
+  actor     String   @default("system")
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model Payment {
+  id           String   @id @default(cuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method       String
+  amount       Int
+  reference    String?
+  senderNumber String?
+  // "PENDING" | "VERIFIED" | "REJECTED" | "REFUNDED"
+  status       String   @default("PENDING")
+  notes        String?
+  verifiedBy   String?
+  verifiedAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([method])
+  @@index([orderId])
+}
+
+model RefundRequest {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount     Int
+  reason     String
+  // "PENDING" | "APPROVED" | "REJECTED"
+  status     String   @default("PENDING")
+  resolution String?
+  resolvedBy String?
+  resolvedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([status])
 }
 
 model Coupon {
   id          String    @id @default(cuid())
   code        String    @unique
-  // "PERCENT" | "FIXED"
   type        String    @default("PERCENT")
-  // percent points for PERCENT, cents for FIXED
   value       Int
   minSubtotal Int       @default(0)
   description String?
   active      Boolean   @default(true)
+  startsAt    DateTime?
   expiresAt   DateTime?
   usageLimit  Int?
   usedCount   Int       @default(0)
+  maxPerCustomer Int?
+  // Optional: a coupon that only a specific customer may use.
+  customerId  String?
+  customer    User?     @relation(fields: [customerId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
+
+  @@index([customerId])
+  @@index([active])
+}
+
+model FlashSale {
+  id        String    @id @default(cuid())
+  name      String
+  startsAt  DateTime
+  endsAt    DateTime
+  discount  Int       @default(0)
+  active    Boolean   @default(true)
+  products  Product[]
+  createdAt DateTime  @default(now())
+
+  @@index([active])
+}
+
+model Banner {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  body      String?
+  image     String?
+  link      String?
+  position  String   @default("home")
+  active    Boolean  @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([active])
+  @@index([position])
+}
+
+model PageContent {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  body      String   @default("")
+  published Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  key       String   @id
+  value     String   @default("")
+  group     String   @default("general")
+  updatedAt DateTime @updatedAt
+}
+
+model SupportTicket {
+  id         String   @id @default(cuid())
+  number     String   @unique
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  orderId    String?
+  subject    String
+  category   String   @default("general")
+  // "LOW" | "MEDIUM" | "HIGH" | "URGENT"
+  priority   String   @default("MEDIUM")
+  // "OPEN" | "IN_PROGRESS" | "WAITING" | "RESOLVED" | "CLOSED"
+  status     String   @default("OPEN")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  messages   TicketMessage[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([userId])
+}
+
+model TicketMessage {
+  id         String   @id @default(cuid())
+  ticketId   String
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorType String   @default("CUSTOMER")
+  authorId   String?
+  authorName String?
+  body       String
+  createdAt  DateTime @default(now())
+
+  @@index([ticketId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  body      String?
+  link      String?
+  read      Boolean  @default(false)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actorName String?
+  actorRole String?
+  action    String
+  entity    String?
+  entityId  String?
+  meta      String   @default("{}")
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorId])
+  @@index([entity])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  meta      String   @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model WishlistItem {

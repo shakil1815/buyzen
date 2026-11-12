@@ -71,8 +71,17 @@ export async function requireUser(): Promise<SessionUser> {
   return user;
 }
 
+const ADMIN_ROLES = [
+  "SUPER_ADMIN",
+  "ADMIN",
+  "ORDER_MANAGER",
+  "PRODUCT_MANAGER",
+  "SUPPORT",
+  "MARKETING_MANAGER",
+];
+
 export async function requireAdmin(): Promise<SessionUser> {
   const user = await getSession();
-  if (!user || user.role !== "ADMIN") throw new Error("ADMIN_REQUIRED");
+  if (!user || !ADMIN_ROLES.includes(user.role)) throw new Error("ADMIN_REQUIRED");
   return user;
 }

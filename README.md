@@ -51,6 +51,7 @@ reviews and coupon codes.
 | `npm run e2e`          | Browser test of the shopping journey                       |
 | `npm run e2e:account`  | Browser test of the account journey                        |
 | `npm run e2e:admin`    | Browser test of the admin CRUD flow                        |
+| `npm run e2e:admin-platform` | Browser test of the full admin platform              |
 | `npm run e2e:i18n`     | Browser test of language, currency and theme switching     |
 | `npm run fetch:photos` | Re-download real product photography from Wikimedia Commons |
 | `npm run check:images` | Verify every product image file exists on disk             |
@@ -116,16 +117,31 @@ reviews and coupon codes.
 
 ### Admin back office (`/admin`)
 
-| Section       | What you can do there                                                             |
-| ------------- | --------------------------------------------------------------------------------- |
-| **Dashboard** | Revenue, orders, average order value, product and customer KPIs · 14-day sales chart · top sellers · recent orders · low-stock alerts · a "what you can do here" guide |
-| **Products**  | Create, edit and delete catalogue items · price, compare-at price, stock, brand, SKU, category · **change photos** (main image + gallery paths or URLs) · feature a product on the home page · open it in the storefront |
-| **Orders**    | Every order with customer, address, items and payment detail · one-click status changes (paid → processing → shipped → delivered → cancelled) · full order detail page |
-| **Coupons**   | Percentage or fixed-amount promo codes with a minimum order value · enable/disable · usage counters |
-| **Customers** | Registered shoppers with order count, wishlist size and lifetime value            |
+A role-protected console with 20 sections. Every figure is calculated from live
+database records, and every action is authorised **on the server**.
 
-Sign in with `admin@shopfront.dev` / `admin12345` — the admin area is role-gated and
-invisible to regular customers.
+| Section | What you can do there |
+| ------- | --------------------- |
+| **Dashboard** | Revenue, sales units, orders, AOV, customers, new/active customers, order-status and payment-status distributions, pending payments, refunds, low/out-of-stock counts · 14-day sales bar chart · customer-registration growth line chart · best sellers · popular categories · revenue by district · top customers by value · date-range filter (7/30/90 days, 12 months, all time) |
+| **Customers** | Directory with search, status/segment filters, sorting and pagination · profile pages with personal/contact info, registration date, order history, spend, AOV, wishlist, saved addresses, payment history, activity log and consent-based location · block/unblock · edit permitted fields · CSV export |
+| **Segments** | New / Returning / Regular / High-value / Inactive / Recently-registered computed from real purchase activity · configurable thresholds · one-click targeted campaigns that issue personal coupons to a segment |
+| **Location analytics** | Customers by division, district, city and country · orders by delivery district and division · interactive SVG map of Bangladesh with consented locations only, district drill-down and city filter · withdraw a customer's consent (which deletes the stored coordinates) |
+| **Orders** | Searchable, filterable list (status, payment state, method) with pagination · detail page with timeline, status history, courier/tracking assignment, internal notes, itemised totals and a print/PDF invoice · guarded status workflow (Pending → Confirmed → Processing → Packed → Shipped → Out for delivery → Delivered, plus Cancelled/Returned) |
+| **Payments** | Ledger of every transaction · approve or reject manual bKash/Nagad/Rocket submissions with a reference and sender number · cash-on-delivery collection tracking · refund queue · manual payments are never marked paid without an admin decision |
+| **Refunds** | Return/refund requests raised from an order · approve (creates a refund transaction and moves the order to Returned) or reject with a note |
+| **Products** | Create, edit and delete · price, compare-at price, cost, stock, low-stock threshold, SKU, brand, category, sizes, colours, variants · multiple images · feature on the home page · CSV import and export |
+| **Inventory** | Total products, units in stock, low-stock and out-of-stock counts, inventory valuation, best sellers · inline stock adjustments with a reason · per-product low-stock thresholds · CSV export |
+| **Reviews** | Every review with moderation state · approve / reject / flag as reported · rating averages are recalculated from visible reviews only |
+| **Marketing** | Coupon codes (percentage or fixed, minimum order, expiry, usage limit, customer-targeted) · promotional banners · flash sales · abandoned-cart list with recovery value · loyalty/referral configuration |
+| **Content & CMS** | About, Contact, FAQ, Privacy, Terms, Return & Refund and Shipping pages · website name, contact details, social links, SEO metadata, shipping, tax, currency, language and invoice settings |
+| **Support** | Ticket list with priority and status · threaded replies with status changes |
+| **Roles & permissions** | Permission matrix for Super Admin, Admin, Order Manager, Product Manager, Customer Support and Marketing Manager |
+| **Reports & exports** | Nine downloadable CSV reports (customers, orders, payments, refunds, products, inventory, reviews, coupons, geographic sales) plus print-optimised invoices |
+| **Notifications** | Central feed for new orders, registrations, pending/verified/failed payments, return and refund requests, low stock, tickets and security events · mark as read |
+| **Settings & security** | Authentication settings, admin accounts, session log, full security audit log and a database backup action |
+
+Demo roles: `admin@shopfront.dev` (Super Admin), `orders@shopfront.dev` (Order Manager),
+`support@shopfront.dev` (Customer Support) — all with password `admin12345`.
 
 ### Product photography
 The demo ships with **real photographs** for all 32 products, downloaded from

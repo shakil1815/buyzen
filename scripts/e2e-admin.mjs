@@ -41,6 +41,7 @@ try {
   await page.fill("#price", "49.99");
   await page.fill("#compareAtPrice", "79.99");
   await page.fill("#stock", "25");
+  await page.fill("#sku", `E2E-${Date.now().toString().slice(-6)}`);
   await page.fill("#brand", "QA Labs");
   await page.getByRole("button", { name: "Create product" }).click();
   await page.waitForURL(/admin\/products/, { timeout: 20000 });

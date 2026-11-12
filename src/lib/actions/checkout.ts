@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { maskCard, validateCard } from "@/lib/payment";
 import { getSession } from "@/lib/session";
 import { getStripe } from "@/lib/stripe";
+import { notify } from "@/lib/notifications";
 
 export type CheckoutState = { error?: string };
 
@@ -21,10 +22,15 @@ const checkoutSchema = z.object({
   postalCode: z.string().min(3, "Enter a postal code"),
   country: z.string().min(2, "Select a country"),
   phone: z.string().optional(),
-  cardNumber: z.string().min(12, "Enter a card number"),
-  expiry: z.string().min(4, "Enter the expiry date"),
-  cvc: z.string().min(3, "Enter the CVC"),
+  cardNumber: z.string().optional(),
+  expiry: z.string().optional(),
+  cvc: z.string().optional(),
+  paymentMethod: z.enum(["bkash", "nagad", "rocket", "cod", "card"]).default("cod"),
+  paymentReference: z.string().max(60).optional(),
+  senderNumber: z.string().max(30).optional(),
 });
+
+const MANUAL_METHODS = ["bkash", "nagad", "rocket"] as const;
 
 const addressSchema = checkoutSchema.omit({
   cardNumber: true,
@@ -42,6 +48,8 @@ type Customer = {
   postalCode: string;
   country: string;
   phone?: string;
+  district?: string | null;
+  division?: string | null;
   userId: string | null;
 };
 
@@ -70,7 +78,12 @@ async function createOrder(
   cart: NonNullable<Awaited<ReturnType<typeof getCart>>>,
   totals: Awaited<ReturnType<typeof calculateTotals>>,
   customer: Customer,
-  options: { status: string; paymentMethod: string; paymentRef?: string | null },
+  options: {
+    status: string;
+    paymentStatus?: string;
+    paymentMethod: string;
+    paymentRef?: string | null;
+  },
 ) {
   const orderNumber = `SF-${Date.now().toString(36).toUpperCase()}-${Math.floor(
     Math.random() * 900 + 100,
@@ -86,6 +99,8 @@ async function createOrder(
         address1: customer.address1,
         address2: customer.address2 || null,
         city: customer.city,
+        district: customer.district ?? null,
+        division: customer.division ?? null,
         state: customer.state || null,
         postalCode: customer.postalCode,
         country: customer.country,
@@ -97,6 +112,7 @@ async function createOrder(
         total: totals.total,
         couponCode: totals.couponCode,
         status: options.status,
+        paymentStatus: options.paymentStatus ?? options.status,
         paymentMethod: options.paymentMethod,
         paymentRef: options.paymentRef ?? null,
         items: {
@@ -151,22 +167,40 @@ export async function placeOrderAction(
     postalCode: formData.get("postalCode"),
     country: formData.get("country"),
     phone: formData.get("phone") ?? "",
-    cardNumber: formData.get("cardNumber"),
-    expiry: formData.get("expiry"),
-    cvc: formData.get("cvc"),
+    cardNumber: formData.get("cardNumber") ?? "",
+    expiry: formData.get("expiry") ?? "",
+    cvc: formData.get("cvc") ?? "",
+    paymentMethod: formData.get("paymentMethod") ?? "cod",
+    paymentReference: formData.get("paymentReference") ?? "",
+    senderNumber: formData.get("senderNumber") ?? "",
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Check your details." };
   }
 
-  const card = validateCard(
-    parsed.data.cardNumber,
-    parsed.data.expiry,
-    parsed.data.cvc,
-  );
-  if (!card.valid) {
-    return { error: card.error ?? "Payment could not be verified." };
+  const method = parsed.data.paymentMethod;
+  const isManual = (MANUAL_METHODS as readonly string[]).includes(method);
+
+  let card: { valid: boolean; error?: string; brand?: string } = {
+    valid: true,
+    brand: "card",
+  };
+  if (method === "card") {
+    card = validateCard(
+      parsed.data.cardNumber ?? "",
+      parsed.data.expiry ?? "",
+      parsed.data.cvc ?? "",
+    );
+    if (!card.valid) {
+      return { error: card.error ?? "Payment could not be verified." };
+    }
+  }
+
+  if (isManual && !parsed.data.paymentReference?.trim()) {
+    return {
+      error: "Enter the transaction ID so our team can verify the payment.",
+    };
   }
 
   const cart = await getCart();
@@ -184,6 +218,8 @@ export async function placeOrderAction(
     }
   }
 
+  const paidNow = method === "card";
+
   const order = await createOrder(
     cart,
     totals,
@@ -197,21 +233,64 @@ export async function placeOrderAction(
       postalCode: parsed.data.postalCode,
       country: parsed.data.country,
       phone: parsed.data.phone,
+      district: formData.get("district")?.toString() || null,
+      division: formData.get("division")?.toString() || null,
       userId: (await getSession())?.id ?? null,
     },
     {
-      status: "PAID",
-      paymentMethod: `card (${card.brand ?? "card"})`,
-      paymentRef: `pi_${Math.random().toString(36).slice(2, 12)}`,
+      status: paidNow ? "PAID" : "PENDING",
+      paymentStatus: paidNow ? "PAID" : "PENDING",
+      paymentMethod: paidNow ? `card (${card.brand ?? "card"})` : method,
+      paymentRef: paidNow
+        ? `pi_${Math.random().toString(36).slice(2, 12)}`
+        : (parsed.data.paymentReference ?? null),
     },
   );
+
+  if (!paidNow) {
+    await prisma.payment.create({
+      data: {
+        orderId: order.id,
+        method,
+        amount: totals.total,
+        reference: parsed.data.paymentReference ?? null,
+        senderNumber: parsed.data.senderNumber ?? null,
+        status: "PENDING",
+        notes:
+          method === "cod"
+            ? "Cash on delivery - collect on arrival"
+            : "Manual mobile payment awaiting admin verification",
+      },
+    });
+
+    await prisma.orderEvent.create({
+      data: {
+        orderId: order.id,
+        type: "payment",
+        message:
+          method === "cod"
+            ? "Order placed with cash on delivery"
+            : `${method.toUpperCase()} payment submitted for verification`,
+        actor: "customer",
+      },
+    });
+
+    await notify({
+      type: "payment.pending",
+      title: `Payment awaiting verification (${order.number})`,
+      body: `${method.toUpperCase()} · ${parsed.data.paymentReference ?? "no reference"}`,
+      link: `/admin/payments`,
+    });
+  }
 
   await clearCart();
   revalidatePath("/cart");
   redirect(
-    `/checkout/success?order=${order.number}&card=${encodeURIComponent(
-      maskCard(parsed.data.cardNumber),
-    )}`,
+    `/checkout/success?order=${order.number}${
+      paidNow
+        ? `&card=${encodeURIComponent(maskCard(parsed.data.cardNumber ?? ""))}`
+        : ""
+    }`,
   );
 }
 

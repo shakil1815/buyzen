@@ -24,7 +24,8 @@
     "screenshots:i18n": "node scripts/screenshots-i18n.mjs",
     "fetch:photos": "node scripts/fetch-product-images.mjs",
     "screenshots:admin": "node scripts/screenshots-admin.mjs",
-    "check:images": "node scripts/check-images.mjs"
+    "check:images": "node scripts/check-images.mjs",
+    "e2e:admin-platform": "node scripts/e2e-admin-platform.mjs"
   },
   "prisma": {
     "seed": "node prisma/seed.mts"
