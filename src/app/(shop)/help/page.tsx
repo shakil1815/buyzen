@@ -78,7 +78,7 @@ export default async function HelpPage() {
       <div className="max-w-2xl">
         <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-fg">
           <span className="h-px w-6 bg-brand-400" />
-          ShopFront
+          BuyZen
         </span>
         <h1 className="mt-2 text-4xl font-black tracking-tight text-fg-strong">
           {t("help.title")}
@@ -147,7 +147,7 @@ export default async function HelpPage() {
             <li>{t("help.returnsSteps3")}</li>
           </ol>
           <p className="mt-4">
-            {t("help.returnsContact", { email: "support@shopfront.dev" })}
+            {t("help.returnsContact", { email: "support@buyzen.com" })}
           </p>
         </div>
       </section>
@@ -163,7 +163,7 @@ export default async function HelpPage() {
             </span>
             <div>
               <p className="text-sm font-semibold text-fg">
-                support@shopfront.dev
+                support@buyzen.com
               </p>
               <p className="text-xs text-fg-muted">{t("help.contactBody")}</p>
             </div>

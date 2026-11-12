@@ -117,27 +117,27 @@ export function WebsiteSettingsForm({
   return (
     <form action={formAction} className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {field("siteName", "Website name", "ShopFront")}
-        {field("contactEmail", "Contact email", "support@shopfront.dev", "email")}
+        {field("siteName", "Website name", "BuyZen")}
+        {field("contactEmail", "Contact email", "support@buyzen.com", "email")}
         {field("contactPhone", "Contact phone", "+880 1710-000000")}
         {field(
           "contactAddress",
           "Contact address",
           "42 Gulshan Avenue, Dhaka 1212",
         )}
-        {field("socialFacebook", "Facebook URL", "https://facebook.com/shopfront")}
-        {field("socialInstagram", "Instagram URL", "https://instagram.com/shopfront")}
-        {field("socialYoutube", "YouTube URL", "https://youtube.com/@shopfront")}
+        {field("socialFacebook", "Facebook URL", "https://facebook.com/buyzen")}
+        {field("socialInstagram", "Instagram URL", "https://instagram.com/buyzen")}
+        {field("socialYoutube", "YouTube URL", "https://youtube.com/@buyzen")}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {field("seoTitle", "SEO title", "ShopFront — premium tech & lifestyle")}
+        {field("seoTitle", "SEO title", "BuyZen — premium tech & lifestyle")}
         {field(
           "seoDescription",
           "SEO description",
           "Premium audio, computing, gaming and home gear with free shipping over $150.",
         )}
-        {field("supportEmail", "Support email", "support@shopfront.dev", "email")}
+        {field("supportEmail", "Support email", "support@buyzen.com", "email")}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

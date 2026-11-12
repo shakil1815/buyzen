@@ -43,7 +43,7 @@ export default async function CreditsPage() {
       <div className="max-w-2xl">
         <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-fg">
           <span className="h-px w-6 bg-brand-400" />
-          ShopFront
+          BuyZen
         </span>
         <h1 className="mt-2 text-4xl font-black tracking-tight text-fg-strong">
           {t("credits.title")}

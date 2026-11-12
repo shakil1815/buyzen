@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getAdminContext, ROLE_LABELS, isAdminRole } from "@/lib/permissions";
 import { ADMIN_NAV, ADMIN_ICONS } from "@/lib/admin/nav";
 import { AdminIcon } from "@/components/admin/admin-icon";
+import { BrandMark } from "@/components/brand";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -32,11 +33,9 @@ export default async function AdminLayout({
       <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
         <div className="container-page flex h-16 items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-sm font-black text-white">
-              SF
-            </span>
+            <BrandMark className="h-8 w-8" />
             <span className="hidden text-base font-black tracking-tight text-fg-strong sm:block">
-              ShopFront
+              BuyZen
               <span className="ml-2 rounded-md bg-surface-3 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-fg-muted">
                 Admin
               </span>

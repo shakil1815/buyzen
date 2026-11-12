@@ -1,5 +1,5 @@
 {
-  "name": "ecommerce-store",
+  "name": "buyzen",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -25,7 +25,10 @@
     "fetch:photos": "node scripts/fetch-product-images.mjs",
     "screenshots:admin": "node scripts/screenshots-admin.mjs",
     "check:images": "node scripts/check-images.mjs",
-    "e2e:admin-platform": "node scripts/e2e-admin-platform.mjs"
+    "e2e:admin-platform": "node scripts/e2e-admin-platform.mjs",
+    "postinstall": "prisma generate",
+    "db:postgres:prepare": "prisma migrate dev --name postgres_setup",
+    "db:reset": "node scripts/reset-db.mjs"
   },
   "prisma": {
     "seed": "node prisma/seed.mts"
@@ -59,5 +62,6 @@
     "prisma@6.19.3": true,
     "@prisma/client@6.19.3": true,
     "@prisma/engines@6.19.3": true
-  }
+  },
+  "description": "BuyZen — everything you need, one place. A full-stack e-commerce storefront with a complete admin platform."
 }

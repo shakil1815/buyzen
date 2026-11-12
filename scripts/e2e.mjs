@@ -79,12 +79,12 @@ try {
   check("order placed", page.url().includes("/checkout/success"), page.url());
   check(
     "confirmation shows order number",
-    await page.getByText(/SF-[A-Z0-9]+-\d+/).first().isVisible(),
+    await page.getByText(/BZ-[A-Z0-9]+-\d+/).first().isVisible(),
   );
 
   // 6. Sign in ----------------------------------------------------------
   await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
-  await page.fill("#email", "admin@shopfront.dev");
+  await page.fill("#email", "admin@buyzen.com");
   await page.fill("#password", "admin12345");
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL(/\/admin/, { timeout: 20000 });

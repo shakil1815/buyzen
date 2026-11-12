@@ -28,7 +28,7 @@ export default async function InvoicePage(
   const rate = usdToBdtRate();
   const money = (cents: number) => formatMoney(cents, currency, rate);
   const invoiceNumber =
-    order.invoiceNumber ?? `INV-${order.number.replace("SF-", "")}`;
+    order.invoiceNumber ?? `INV-${order.number.replace("BZ-", "")}`;
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -49,12 +49,12 @@ export default async function InvoicePage(
         <div className="flex items-start justify-between gap-6 border-b border-line pb-6">
           <div>
             <p className="text-xl font-black tracking-tight text-fg-strong">
-              ShopFront
+              BuyZen
             </p>
             <p className="mt-1 text-xs text-fg-muted">
               42 Gulshan Avenue, Dhaka 1212, Bangladesh
               <br />
-              support@shopfront.dev · +880 1710-000000
+              support@buyzen.com · +880 1710-000000
             </p>
           </div>
           <div className="text-right">
@@ -153,7 +153,7 @@ export default async function InvoicePage(
 
         <p className="mt-8 border-t border-line pt-4 text-[11px] text-fg-subtle">
           Thank you for your order. This is a computer generated invoice from
-          the ShopFront demo store.
+          the BuyZen demo store.
         </p>
       </div>
     </div>

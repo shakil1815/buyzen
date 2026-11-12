@@ -12,7 +12,7 @@ const context = await browser.newContext({ viewport: { width: 1600, height: 1100
 const page = await context.newPage();
 
 await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
-await page.fill("#email", "admin@shopfront.dev");
+await page.fill("#email", "admin@buyzen.com");
 await page.fill("#password", "admin12345");
 await page.getByRole("button", { name: "Sign in" }).click();
 await page.waitForURL(/\/admin/, { timeout: 20000 });
@@ -46,7 +46,7 @@ const mobile = await browser.newContext({
 });
 const mobilePage = await mobile.newPage();
 await mobilePage.goto(`${BASE}/login`, { waitUntil: "networkidle" });
-await mobilePage.fill("#email", "admin@shopfront.dev");
+await mobilePage.fill("#email", "admin@buyzen.com");
 await mobilePage.fill("#password", "admin12345");
 await mobilePage.getByRole("button", { name: "Sign in" }).click();
 await mobilePage.waitForURL(/\/admin/, { timeout: 20000 });

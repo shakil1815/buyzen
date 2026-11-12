@@ -14,6 +14,7 @@ import { prisma } from "@/lib/prisma";
 import { SearchBar } from "@/components/search-bar";
 import { MobileNav } from "@/components/mobile-nav";
 import { SettingsMenu } from "@/components/settings-menu";
+import { Brand } from "@/components/brand";
 import { categoryLabel, getT } from "@/lib/i18n/server";
 
 export async function SiteHeader() {
@@ -43,14 +44,7 @@ export async function SiteHeader() {
         <div className="container-page flex h-16 items-center gap-3 lg:gap-6">
           <MobileNav categories={categories} />
 
-          <Link href="/" className="flex shrink-0 items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-sm font-black text-white">
-              SF
-            </span>
-            <span className="hidden text-lg font-black tracking-tight text-fg-strong sm:block">
-              ShopFront
-            </span>
-          </Link>
+          <Brand className="shrink-0" />
 
           <nav className="hidden items-center gap-1 xl:flex">
             <Link

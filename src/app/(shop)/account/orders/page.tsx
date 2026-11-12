@@ -12,7 +12,7 @@ import { usdToBdtRate } from "@/lib/currency";
 
 export const metadata: Metadata = {
   title: "My orders",
-  description: "Track and review your ShopFront orders.",
+  description: "Track and review your BuyZen orders.",
 };
 
 const STATUS_STYLES: Record<string, string> = {

@@ -193,7 +193,7 @@ const BOOST =
   /(product|studio shot|isolated|white background|light background|packshot|device|front view|side view|close-?up|new |model\b)/i;
 
 const USER_AGENT =
-  "ShopFrontDemo/1.0 (https://example.com/shopfront-demo; demo@example.com) node-fetch";
+  "BuyZenDemo/1.0 (https://example.com/buyzen-demo; demo@example.com) node-fetch";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

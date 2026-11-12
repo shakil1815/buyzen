@@ -1,18 +1,32 @@
-# ShopFront — a complete e-commerce storefront
+# BuyZen — Everything You Need. One Place.
 
-A production-shaped demo store built with **Next.js 16 (App Router)**, **TypeScript**,
-**Tailwind CSS v4**, **Prisma + SQLite**, and server actions for every mutation.
+**BuyZen** is a production-shaped e-commerce storefront built with **Next.js 16
+(App Router)**, **TypeScript**, **Tailwind CSS v4**, **Prisma + SQLite/Postgres**,
+and server actions for every mutation.
 It includes the full shopping journey (browse → search → cart → promo code →
-checkout → order), customer accounts, an admin back office, marketing extras, and a
-catalog-aware AI shopping assistant.
+checkout → order), customer accounts, a complete admin platform, marketing extras,
+and a catalog-aware AI shopping assistant.
 
 **Built for a Bangladesh audience out of the box:** full **বাংলা (Bangla)** interface,
-**BDT (৳ Taka)** pricing alongside USD, and a **Light / Dark / Default( System)** theme
-switcher — all switchable from the header without a page reload.
+**BDT (৳ Taka)** pricing alongside USD, and a **Light / Dark / Default (System)**
+theme switcher — all switchable from the header without a page reload.
 
 ```
 C:\Users\shaki\ecommerce-store
 ```
+
+> 🚀 **Going live?** Follow **[DEPLOYMENT.md](./DEPLOYMENT.md)** — GitHub push,
+> PostgreSQL setup, Vercel import, environment variables and the post-deploy
+> checklist.
+
+### Brand assets
+
+| File | Use |
+| ---- | --- |
+| `public/brand/buyzen-logo.svg` | Full lock-up (mark + BUYZen wordmark + tagline) — social/OG image |
+| `public/brand/buyzen-mark.svg` | Icon only — avatars, app icons, favicon source |
+| `src/app/icon.svg` | Favicon (Next.js file convention) |
+| `src/components/brand.tsx` | `<Brand />` / `<BrandMark />` React components used in the header, footer and admin shell |
 
 ---
 
@@ -32,7 +46,7 @@ reviews and coupon codes.
 
 | Role     | Email                   | Password     |
 | -------- | ----------------------- | ------------ |
-| Admin    | `admin@shopfront.dev`   | `admin12345` |
+| Admin    | `admin@buyzen.com`   | `admin12345` |
 | Customer | `customer@example.com`  | `customer123`|
 
 ### Useful scripts
@@ -140,8 +154,8 @@ database records, and every action is authorised **on the server**.
 | **Notifications** | Central feed for new orders, registrations, pending/verified/failed payments, return and refund requests, low stock, tickets and security events · mark as read |
 | **Settings & security** | Authentication settings, admin accounts, session log, full security audit log and a database backup action |
 
-Demo roles: `admin@shopfront.dev` (Super Admin), `orders@shopfront.dev` (Order Manager),
-`support@shopfront.dev` (Customer Support) — all with password `admin12345`.
+Demo roles: `admin@buyzen.com` (Super Admin), `orders@buyzen.com` (Order Manager),
+`support@buyzen.com` (Customer Support) — all with password `admin12345`.
 
 ### Product photography
 The demo ships with **real photographs** for all 32 products, downloaded from

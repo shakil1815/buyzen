@@ -9,12 +9,12 @@ const CMS_PAGES = [
   {
     slug: "about",
     title: "About Us",
-    body: "ShopFront is a demo storefront for premium tech, audio, gaming and home goods.",
+    body: "BuyZen is a demo storefront for premium tech, audio, gaming and home goods.",
   },
   {
     slug: "contact",
     title: "Contact Us",
-    body: "Reach the team at support@shopfront.dev or +880 1710-000000.",
+    body: "Reach the team at support@buyzen.com or +880 1710-000000.",
   },
   {
     slug: "faq",

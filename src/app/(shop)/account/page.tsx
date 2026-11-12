@@ -11,7 +11,7 @@ import { usdToBdtRate } from "@/lib/currency";
 
 export const metadata: Metadata = {
   title: "My account",
-  description: "Manage your ShopFront profile, orders and wishlist.",
+  description: "Manage your BuyZen profile, orders and wishlist.",
 };
 
 export default async function AccountPage() {

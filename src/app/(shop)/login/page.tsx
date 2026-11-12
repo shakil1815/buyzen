@@ -8,7 +8,7 @@ import { getT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to your ShopFront account.",
+  description: "Sign in to your BuyZen account.",
 };
 
 export default async function LoginPage(props: PageProps<"/login">) {
@@ -50,7 +50,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
             <code>customer123</code>
           </p>
           <p>
-            {t("auth.admin")}: <code>admin@shopfront.dev</code> /{" "}
+            {t("auth.admin")}: <code>admin@buyzen.com</code> /{" "}
             <code>admin12345</code>
           </p>
         </div>

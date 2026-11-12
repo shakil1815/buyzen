@@ -38,7 +38,7 @@ try {
   page.on("pageerror", (error) => errors.push(String(error)));
 
   /* ---------------------------- super admin ---------------------------- */
-  await login(page, "admin@shopfront.dev", "admin12345");
+  await login(page, "admin@buyzen.com", "admin12345");
 
   await page.goto(`${BASE}/admin`, { waitUntil: "networkidle" });
   check(
@@ -247,7 +247,7 @@ try {
     viewport: { width: 1440, height: 1000 },
   });
   const limitedPage = await limited.newPage();
-  await login(limitedPage, "orders@shopfront.dev", "admin12345");
+  await login(limitedPage, "orders@buyzen.com", "admin12345");
   await limitedPage.goto(`${BASE}/admin`, { waitUntil: "networkidle" });
   check(
     "order manager can open the dashboard",

@@ -13,7 +13,7 @@ import { getCurrency } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Checkout",
-  description: "Complete your ShopFront order.",
+  description: "Complete your BuyZen order.",
 };
 
 export default async function CheckoutPage() {

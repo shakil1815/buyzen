@@ -108,7 +108,7 @@ export default async function ProductPage(props: PageProps<"/products/[slug]">) 
     image: gallery,
     description: product.description,
     sku: product.sku,
-    brand: { "@type": "Brand", name: product.brand ?? "ShopFront" },
+    brand: { "@type": "Brand", name: product.brand ?? "BuyZen" },
     offers: {
       "@type": "Offer",
       price: (product.price / 100).toFixed(2),

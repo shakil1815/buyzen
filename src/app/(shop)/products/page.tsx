@@ -11,7 +11,7 @@ import { categoryLabel, getT } from "@/lib/i18n/server";
 export const metadata: Metadata = {
   title: "Shop all products",
   description:
-    "Browse the full ShopFront catalogue of audio, wearables, computing, photography, home and gaming gear.",
+    "Browse the full BuyZen catalogue of audio, wearables, computing, photography, home and gaming gear.",
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;

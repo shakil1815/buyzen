@@ -6,7 +6,7 @@
  */
 export const en = {
   "html.lang": "en",
-  "common.brand": "ShopFront",
+  "common.brand": "BuyZen",
   "common.tagline": "Premium tech, audio, gaming & home",
   "common.loading": "Loading…",
   "common.viewAll": "View all",
@@ -256,12 +256,12 @@ export const en = {
   "auth.signIn": "Sign in",
   "auth.register": "Create account",
   "auth.signingIn": "Please wait…",
-  "auth.newTo": "New to ShopFront?",
+  "auth.newTo": "New to BuyZen?",
   "auth.already": "Already have an account?",
   "auth.demoTitle": "Demo accounts",
   "auth.customer": "Customer",
   "auth.admin": "Admin",
-  "auth.benefitsTitle": "Why join ShopFront?",
+  "auth.benefitsTitle": "Why join BuyZen?",
   "auth.benefit1": "Track every order from warehouse to doorstep",
   "auth.benefit2": "Save products to your wishlist for later",
   "auth.benefit3": "Write reviews and get member-only promo codes",
@@ -449,7 +449,7 @@ export const en = {
   "help.contactBody": "We reply to every message within one business day.",
   "help.backToShopping": "Back to shopping",
 
-  "chat.title": "ShopFront assistant",
+  "chat.title": "BuyZen assistant",
   "chat.subtitle": "Catalog-aware · replies instantly",
   "chat.open": "Ask the assistant",
   "chat.close": "Close",
@@ -457,7 +457,7 @@ export const en = {
   "chat.send": "Send message",
   "chat.thinking": "Thinking…",
   "chat.greeting":
-    "Hi! I'm the ShopFront assistant. Ask me to find a product, explain shipping or track an order.",
+    "Hi! I'm the BuyZen assistant. Ask me to find a product, explain shipping or track an order.",
   "chat.error":
     "I couldn't reach the store right now. Please try again in a moment.",
   "chat.suggestion1": "What are your best sellers?",
@@ -479,7 +479,7 @@ export const en = {
   "footer.returns": "30-day returns",
   "footer.cards": "Cards & wallets",
   "footer.worldwide": "Worldwide",
-  "footer.copyright": "© {year} ShopFront. Demo storefront.",
+  "footer.copyright": "© {year} BuyZen. Demo storefront.",
 
   "credits.title": "Photo credits",
   "credits.body":
@@ -508,7 +508,7 @@ export type TranslationKey = keyof typeof en;
 
 export const bn: Record<TranslationKey, string> = {
   "html.lang": "bn",
-  "common.brand": "শপফ্রন্ট",
+  "common.brand": "বুয়াজেন",
   "common.tagline": "প্রিমিয়াম টেক, অডিও, গেমিং ও হোম",
   "common.loading": "লোড হচ্ছে…",
   "common.viewAll": "সব দেখুন",
@@ -756,12 +756,12 @@ export const bn: Record<TranslationKey, string> = {
   "auth.signIn": "সাইন ইন",
   "auth.register": "অ্যাকাউন্ট খুলুন",
   "auth.signingIn": "অপেক্ষা করুন…",
-  "auth.newTo": "শপফ্রন্টে নতুন?",
+  "auth.newTo": "বুয়াজেনে নতুন?",
   "auth.already": "আগে থেকেই অ্যাকাউন্ট আছে?",
   "auth.demoTitle": "ডেমো অ্যাকাউন্ট",
   "auth.customer": "ক্রেতা",
   "auth.admin": "অ্যাডমিন",
-  "auth.benefitsTitle": "শপফ্রন্টে যোগ দেবেন কেন?",
+  "auth.benefitsTitle": "বুয়াজেনে যোগ দেবেন কেন?",
   "auth.benefit1": "ওয়্যারহাউস থেকে দরজায় পর্যন্ত প্রতিটি অর্ডার ট্র্যাক করুন",
   "auth.benefit2": "পছন্দের পণ্য তালিকায় সংরক্ষণ করে রাখুন",
   "auth.benefit3": "রিভিউ লিখুন ও সদস্য-বিশেষ প্রোমো কোড পান",
@@ -947,7 +947,7 @@ export const bn: Record<TranslationKey, string> = {
   "help.contactBody": "প্রতিটি বার্তার উত্তর এক কার্যদিবসের মধ্যে দেওয়া হয়।",
   "help.backToShopping": "কেনাকাটায় ফিরে যান",
 
-  "chat.title": "শপফ্রন্ট সহায়ক",
+  "chat.title": "বুয়াজেন সহায়ক",
   "chat.subtitle": "ক্যাটালগ সচেতন · সঙ্গে সঙ্গে উত্তর",
   "chat.open": "সহায়ককে জিজ্ঞাসা করুন",
   "chat.close": "বন্ধ করুন",
@@ -955,7 +955,7 @@ export const bn: Record<TranslationKey, string> = {
   "chat.send": "বার্তা পাঠান",
   "chat.thinking": "ভাবছে…",
   "chat.greeting":
-    "হ্যালো! আমি শপফ্রন্ট সহায়ক। পণ্য খুঁজে দিতে, ডেলিভারি বোঝাতে বা অর্ডার ট্র্যাক করতে সাহায্য করতে পারি।",
+    "হ্যালো! আমি বুয়াজেন সহায়ক। পণ্য খুঁজে দিতে, ডেলিভারি বোঝাতে বা অর্ডার ট্র্যাক করতে সাহায্য করতে পারি।",
   "chat.error": "এই মুহূর্তে স্টোরে পৌঁছাতে পারছি না। একটু পরে আবার চেষ্টা করুন।",
   "chat.suggestion1": "আপনার বেস্ট সেলারগুলো কী?",
   "chat.suggestion2": "৳১,০০০ এর মধ্যে কিছু দেখান",
@@ -976,7 +976,7 @@ export const bn: Record<TranslationKey, string> = {
   "footer.returns": "৩০ দিনের রিটার্ন",
   "footer.cards": "কার্ড ও ওয়ালেট",
   "footer.worldwide": "বিশ্বজুড়ে",
-  "footer.copyright": "© {year} শপফ্রন্ট। ডেমো স্টোর।",
+  "footer.copyright": "© {year} বুয়াজেন। ডেমো স্টোর।",
 
   "credits.title": "ছবির কৃতিত্ব",
   "credits.body":

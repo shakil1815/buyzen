@@ -26,7 +26,7 @@ const productName = `Test Widget ${Date.now().toString().slice(-5)}`;
 
 try {
   await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
-  await page.fill("#email", "admin@shopfront.dev");
+  await page.fill("#email", "admin@buyzen.com");
   await page.fill("#password", "admin12345");
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL(/\/admin/, { timeout: 20000 });

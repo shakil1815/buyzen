@@ -389,7 +389,7 @@ function SectionHeading({
       <div>
         <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-fg">
           <span className="h-px w-6 bg-brand-400" />
-          ShopFront
+          BuyZen
         </span>
         <h2 className="mt-2 text-2xl font-black tracking-tight text-fg-strong sm:text-3xl">
           {title}

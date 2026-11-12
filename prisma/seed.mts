@@ -1,5 +1,5 @@
 /**
- * Seed script for the ShopFront store.
+ * Seed script for the BuyZen store.
  *
  * Run with:  npm run db:seed
  *
@@ -573,7 +573,7 @@ async function main() {
         {
           name: category.name,
           slug: category.slug,
-          brand: "ShopFront",
+          brand: "BuyZen",
           price: 0,
           description: "",
           stock: 0,
@@ -627,7 +627,7 @@ async function main() {
         create: {
           name: item.name,
           slug: item.slug,
-          sku: `SF-${categorySlug.slice(0, 3).toUpperCase()}-${String(index).padStart(4, "0")}`,
+          sku: `BZ-${categorySlug.slice(0, 3).toUpperCase()}-${String(index).padStart(4, "0")}`,
           brand: item.brand,
           price: item.price,
           compareAtPrice: item.compareAtPrice ?? null,
@@ -650,10 +650,10 @@ async function main() {
   const customerPassword = await hash("customer123", 10);
 
   const admin = await prisma.user.upsert({
-    where: { email: "admin@shopfront.dev" },
+    where: { email: "admin@buyzen.com" },
     update: { role: "SUPER_ADMIN", passwordHash: adminPassword },
     create: {
-      email: "admin@shopfront.dev",
+      email: "admin@buyzen.com",
       name: "Ada Admin",
       passwordHash: adminPassword,
       role: "SUPER_ADMIN",
@@ -661,10 +661,10 @@ async function main() {
   });
 
   await prisma.user.upsert({
-    where: { email: "orders@shopfront.dev" },
+    where: { email: "orders@buyzen.com" },
     update: { role: "ORDER_MANAGER", passwordHash: adminPassword },
     create: {
-      email: "orders@shopfront.dev",
+      email: "orders@buyzen.com",
       name: "Omar Orders",
       passwordHash: adminPassword,
       role: "ORDER_MANAGER",
@@ -672,10 +672,10 @@ async function main() {
   });
 
   await prisma.user.upsert({
-    where: { email: "support@shopfront.dev" },
+    where: { email: "support@buyzen.com" },
     update: { role: "SUPPORT", passwordHash: adminPassword },
     create: {
-      email: "support@shopfront.dev",
+      email: "support@buyzen.com",
       name: "Sana Support",
       passwordHash: adminPassword,
       role: "SUPPORT",
@@ -819,7 +819,7 @@ async function main() {
         {
           slug: "about",
           title: "About Us",
-          body: "ShopFront curates premium tech, audio, gaming and home goods for Bangladesh. We source directly, ship nationwide and support every order from one team.",
+          body: "BuyZen curates premium tech, audio, gaming and home goods for Bangladesh. We source directly, ship nationwide and support every order from one team.",
         },
         {
           slug: "faq",
@@ -836,11 +836,11 @@ async function main() {
   }
 
   const settings = [
-    ["site_name", "ShopFront", "site"],
-    ["contact_email", "support@shopfront.dev", "contact"],
+    ["site_name", "BuyZen", "site"],
+    ["contact_email", "support@buyzen.com", "contact"],
     ["contact_phone", "+880 1710-000000", "contact"],
     ["contact_address", "42 Gulshan Avenue, Dhaka 1212, Bangladesh", "contact"],
-    ["seo_title", "ShopFront — premium tech & lifestyle", "seo"],
+    ["seo_title", "BuyZen — premium tech & lifestyle", "seo"],
     [
       "seo_description",
       "Premium audio, computing, gaming and home gear with free delivery over ৳15,000.",
@@ -852,7 +852,7 @@ async function main() {
     ["currency_default", "BDT", "currency"],
     ["language_default", "bn", "language"],
     ["usd_to_bdt_rate", "120", "currency"],
-    ["support_email", "support@shopfront.dev", "support"],
+    ["support_email", "support@buyzen.com", "support"],
     ["invoice_prefix", "INV", "invoice"],
     ["session_timeout_minutes", "60", "security"],
     ["max_login_attempts", "5", "security"],
@@ -929,7 +929,7 @@ async function main() {
   }
 
   console.log(`Seeded ${allProducts.length} products, ${categories.length} categories.`);
-  console.log("Admin login:    admin@shopfront.dev / admin12345");
+  console.log("Admin login:    admin@buyzen.com / admin12345");
   console.log("Customer login: customer@example.com / customer123");
   void admin;
 }

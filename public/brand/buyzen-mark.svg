@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="BuyZen">
+  <defs>
+    <linearGradient id="bzBag" x1="0.05" y1="1" x2="0.95" y2="0">
+      <stop offset="0%" stop-color="#08194C"/>
+      <stop offset="42%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="bzSwoosh" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="55%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+  </defs>
+
+  <!-- shopping bag handle -->
+  <path d="M198 176 C 198 96, 314 96, 314 176" fill="none" stroke="#08194C" stroke-width="30" stroke-linecap="round"/>
+  <path d="M214 176 C 214 116, 298 116, 298 176" fill="none" stroke="#2F6BE8" stroke-width="9" stroke-linecap="round" opacity="0.75"/>
+
+  <!-- orange orbit sweeping around the bag -->
+  <path d="M92 404 C 30 320, 118 248, 246 256 C 372 264, 456 322, 474 244" fill="none" stroke="url(#bzSwoosh)" stroke-width="26" stroke-linecap="round"/>
+  <path d="M92 404 C 58 372, 62 330, 92 306" fill="none" stroke="#EA580C" stroke-width="26" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- shopping bag -->
+  <path d="M152 170 H 360 C 392 170 412 194 405 226 L 378 382 C 372 416 344 440 310 440 H 188 C 154 440 126 416 120 382 L 98 226 C 92 194 112 170 144 170 Z" fill="url(#bzBag)"/>
+
+  <!-- letter B with shopping-cart lines -->
+  <g>
+    <path fill="#FFFFFF" d="M236 206 h 84 c 37 0 61 19 61 47 c 0 16 -7 28 -19 35 c 15 6 24 19 24 36 c 0 30 -25 49 -62 49 h -88 z m 36 30 v 27 h 43 c 17 0 26 -5 26 -14 c 0 -8 -9 -13 -26 -13 z m 0 54 v 30 h 46 c 18 0 27 -6 27 -15 c 0 -9 -9 -15 -27 -15 z"/>
+    <g stroke="#1D4ED8" stroke-width="8" stroke-linecap="round">
+      <path d="M300 268 h 48"/>
+      <path d="M300 296 h 42"/>
+    </g>
+    <circle cx="300" cy="352" r="10" fill="#FFFFFF"/>
+    <circle cx="338" cy="352" r="10" fill="#FFFFFF"/>
+  </g>
+</svg>

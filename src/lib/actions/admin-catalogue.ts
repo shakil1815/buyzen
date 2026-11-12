@@ -283,7 +283,7 @@ export async function importProductsAction(
         sku: row.sku,
         description:
           row.description ??
-          `${row.name} imported into the ShopFront catalogue.`,
+          `${row.name} imported into the BuyZen catalogue.`,
         price: Math.round(Number(row.price || 0) * 100),
         stock: Number(row.stock || 0),
         categoryId: category.id,

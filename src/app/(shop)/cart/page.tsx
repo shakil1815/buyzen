@@ -11,7 +11,7 @@ import { usdToBdtRate } from "@/lib/currency";
 
 export const metadata: Metadata = {
   title: "Your cart",
-  description: "Review the items in your ShopFront cart before checkout.",
+  description: "Review the items in your BuyZen cart before checkout.",
 };
 
 export default async function CartPage() {

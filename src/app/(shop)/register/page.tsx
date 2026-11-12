@@ -7,7 +7,7 @@ import { getT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Create an account",
-  description: "Create a ShopFront account to track orders and save favourites.",
+  description: "Create a BuyZen account to track orders and save favourites.",
 };
 
 const BENEFITS = [

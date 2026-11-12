@@ -7,6 +7,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { Brand } from "@/components/brand";
 import { prisma } from "@/lib/prisma";
 import { getT } from "@/lib/i18n/server";
 
@@ -45,14 +46,7 @@ export async function SiteFooter() {
     <footer className="mt-20 border-t border-line bg-surface-2">
       <div className="container-page grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-sm font-black text-white">
-              SF
-            </span>
-            <span className="text-lg font-black tracking-tight text-fg-strong">
-              ShopFront
-            </span>
-          </Link>
+          <Brand tagline />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-fg-muted">
             {t("footer.about")}
           </p>

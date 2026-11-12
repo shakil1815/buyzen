@@ -1,4 +1,4 @@
-# ShopFront — Admin Dashboard & Customer Management Implementation Plan
+# BuyZen — Admin Dashboard & Customer Management Implementation Plan
 
 Status: **complete** · Last updated: Phase 14
 

@@ -22,16 +22,17 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   ),
   title: {
-    default: "ShopFront — Premium tech, audio, gaming & home",
-    template: "%s · ShopFront",
+    default: "BuyZen — Everything You Need. One Place.",
+    template: "%s · BuyZen",
   },
   description:
-    "ShopFront is a modern storefront for premium audio, wearables, computing, photography, home and gaming gear. Free shipping over $150 and 30-day returns.",
+    "BuyZen is a modern storefront for premium audio, wearables, computing, photography, home and gaming gear. Free shipping over $150 and 30-day returns.",
   openGraph: {
-    title: "ShopFront — Premium tech, audio, gaming & home",
+    title: "BuyZen — Everything You Need. One Place.",
     description:
-      "Curated tech, audio, gaming and home goods with free shipping over $150.",
+      "Premium audio, computing, gaming and home goods with free shipping over $150.",
     type: "website",
+    images: ["/brand/buyzen-logo.svg"],
   },
 };
 

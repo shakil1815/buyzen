@@ -85,7 +85,7 @@ async function createOrder(
     paymentRef?: string | null;
   },
 ) {
-  const orderNumber = `SF-${Date.now().toString(36).toUpperCase()}-${Math.floor(
+  const orderNumber = `BZ-${Date.now().toString(36).toUpperCase()}-${Math.floor(
     Math.random() * 900 + 100,
   )}`;
 

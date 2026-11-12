@@ -5,11 +5,11 @@ import { ChatWidget } from "@/components/chat-widget";
 
 export const metadata: Metadata = {
   title: {
-    default: "ShopFront — Premium tech, audio, gaming & home",
-    template: "%s · ShopFront",
+    default: "BuyZen — Everything You Need. One Place.",
+    template: "%s · BuyZen",
   },
   description:
-    "ShopFront is a modern storefront for premium audio, wearables, computing, photography, home and gaming gear. Free shipping over $150 and 30-day returns.",
+    "BuyZen is a modern storefront for premium audio, wearables, computing, photography, home and gaming gear. Free shipping over $150 and 30-day returns.",
   keywords: [
     "ecommerce",
     "online store",
@@ -17,12 +17,14 @@ export const metadata: Metadata = {
     "headphones",
     "laptops",
     "gaming",
+    "BuyZen",
   ],
   openGraph: {
-    title: "ShopFront — Premium tech, audio, gaming & home",
+    title: "BuyZen — Everything You Need. One Place.",
     description:
-      "Curated tech, audio, gaming and home goods with free shipping over $150.",
+      "Premium audio, computing, gaming and home goods with free shipping over $150.",
     type: "website",
+    images: ["/brand/buyzen-logo.svg"],
   },
 };
 

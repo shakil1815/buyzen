@@ -27,7 +27,7 @@ type ChatOptions = {
 const COPY = {
   en: {
     greeting:
-      "Hi! I'm the ShopFront assistant. I can help you find products, explain shipping and returns, or track an order. What are you after?",
+      "Hi! I'm the BuyZen assistant. I can help you find products, explain shipping and returns, or track an order. What are you after?",
     thanks: "Any time! Let me know if you need anything else.",
     shipping:
       "Standard shipping is $9.90 and arrives in 2-5 business days — it is free on orders over $150. Express options are available at checkout.",
@@ -41,7 +41,7 @@ const COPY = {
     tracking:
       "Open the Orders section of your account (or the confirmation email) to see live status — paid, processing, shipped or delivered. If you have the order number to hand, I can look it up too.",
     contact:
-      "Our team replies within one business day at support@shopfront.dev. For urgent order issues call +1 (555) 014-2200.",
+      "Our team replies within one business day at support@buyzen.com. For urgent order issues call +1 (555) 014-2200.",
     found: (query: string, names: string) =>
       `Here's what I found for "${query}". ${names}.`,
     fallback:
@@ -62,7 +62,7 @@ const COPY = {
   },
   bn: {
     greeting:
-      "হ্যালো! আমি শপফ্রন্ট সহায়ক। পণ্য খুঁজে দিতে, ডেলিভারি ও রিটার্ন বোঝাতে বা অর্ডার ট্র্যাক করতে সাহায্য করতে পারি। কী খুঁজছেন?",
+      "হ্যালো! আমি বুয়াজেন সহায়ক। পণ্য খুঁজে দিতে, ডেলিভারি ও রিটার্ন বোঝাতে বা অর্ডার ট্র্যাক করতে সাহায্য করতে পারি। কী খুঁজছেন?",
     thanks: "সবসময়! আরও কিছু লাগলে জানাবেন।",
     shipping:
       "স্ট্যান্ডার্ড ডেলিভারি $9.90 এবং ২-৫ কার্যদিবসে পৌঁছে যায় — ৳১৫০ (বা $150) এর বেশি অর্ডারে ডেলিভারি ফ্রি। চেকআউটে এক্সপ্রেস অপশনও আছে।",
@@ -75,7 +75,7 @@ const COPY = {
     tracking:
       "আপনার অ্যাকাউন্টের Orders অংশে (অথবা কনফার্মেশন ইমেইলে) লাইভ স্ট্যাটাস দেখুন — পেমেন্ট হয়েছে, প্রস্তুত হচ্ছে, পাঠানো হয়েছে বা ডেলিভার হয়েছে। অর্ডার নম্বর থাকলে আমি খুঁজে দেখতে পারি।",
     contact:
-      "আমাদের টিম এক কার্যদিবসের মধ্যে উত্তর দেয় — support@shopfront.dev। জরুরি অর্ডার সমস্যার জন্য +1 (555) 014-2200 নম্বরে কল করুন।",
+      "আমাদের টিম এক কার্যদিবসের মধ্যে উত্তর দেয় — support@buyzen.com। জরুরি অর্ডার সমস্যার জন্য +1 (555) 014-2200 নম্বরে কল করুন।",
     found: (query: string, names: string) =>
       `“${query}” এর জন্য যা পেয়েছি: ${names}।`,
     fallback:
@@ -241,7 +241,7 @@ async function openAiReply(
   const catalogText = catalog
     .map(
       (product) =>
-        `- ${product.name} (${product.category.name}) by ${product.brand ?? "ShopFront"} — ${formatMoney(
+        `- ${product.name} (${product.category.name}) by ${product.brand ?? "BuyZen"} — ${formatMoney(
           product.price,
           currency,
           rate,
@@ -249,7 +249,7 @@ async function openAiReply(
     )
     .join("\n");
 
-  const system = `You are the ShopFront shopping assistant for an online store.
+  const system = `You are the BuyZen shopping assistant for an online store.
 ${
   locale === "bn"
     ? "Always answer in natural Bangla (Bangladesh) using the ৳ (Taka) symbol for prices."
@@ -258,7 +258,7 @@ ${
 Answer shopper questions briefly and helpfully (2-4 sentences). Use only the catalog below for product facts and never invent products, prices or policies.
 Shipping: free over $150, otherwise $9.90 flat, 2-5 business days.
 Returns: 30 days, unopened items, free return label within the US.
-Support: support@shopfront.dev, replies within one business day.
+Support: support@buyzen.com, replies within one business day.
 Coupons: WELCOME10 (10% off over $50), SAVE20 (20% off over $200), TECHDEAL (15% off tech over $100), FLAT25 ($25 off over $150).
 
 Catalog:

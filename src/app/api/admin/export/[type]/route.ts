@@ -76,7 +76,7 @@ export async function GET(
     });
 
     return csvResponse(
-      `shopfront-customers-${Date.now()}.csv`,
+      `buyzen-customers-${Date.now()}.csv`,
       customers.map((customer) => {
         const spent = customer.orders.reduce(
           (sum, order) => sum + order.total,
@@ -155,7 +155,7 @@ export async function GET(
     });
 
     return csvResponse(
-      `shopfront-customer-${id}.csv`,
+      `buyzen-customer-${id}.csv`,
       customer.orders.map((order) => ({
         order: order.number,
         date: order.createdAt.toISOString(),
@@ -189,7 +189,7 @@ export async function GET(
       meta: { count: orders.length },
     });
     return csvResponse(
-      `shopfront-orders-${Date.now()}.csv`,
+      `buyzen-orders-${Date.now()}.csv`,
       orders.map((order) => ({
         number: order.number,
         date: order.createdAt.toISOString(),
@@ -251,7 +251,7 @@ export async function GET(
       meta: { count: payments.length },
     });
     return csvResponse(
-      `shopfront-payments-${Date.now()}.csv`,
+      `buyzen-payments-${Date.now()}.csv`,
       payments.map((payment) => ({
         order: payment.order.number,
         method: payment.method,
@@ -287,7 +287,7 @@ export async function GET(
       meta: { count: products.length },
     });
     return csvResponse(
-      `shopfront-${type}-${Date.now()}.csv`,
+      `buyzen-${type}-${Date.now()}.csv`,
       products.map((product) => ({
         name: product.name,
         sku: product.sku,
@@ -331,7 +331,7 @@ export async function GET(
       },
     });
     return csvResponse(
-      `shopfront-reviews-${Date.now()}.csv`,
+      `buyzen-reviews-${Date.now()}.csv`,
       reviews.map((review) => ({
         product: review.product.name,
         customer: review.user.name,
@@ -363,7 +363,7 @@ export async function GET(
       orderBy: { createdAt: "desc" },
     });
     return csvResponse(
-      `shopfront-coupons-${Date.now()}.csv`,
+      `buyzen-coupons-${Date.now()}.csv`,
       coupons.map((coupon) => ({
         code: coupon.code,
         type: coupon.type,
@@ -396,7 +396,7 @@ export async function GET(
       orderBy: { createdAt: "desc" },
     });
     return csvResponse(
-      `shopfront-refunds-${Date.now()}.csv`,
+      `buyzen-refunds-${Date.now()}.csv`,
       refunds.map((refund) => ({
         order: refund.order.number,
         amount: (refund.amount / 100).toFixed(2),
@@ -438,7 +438,7 @@ export async function GET(
       byDistrict.set(key, (byDistrict.get(key) ?? 0) + order.total);
     }
     return csvResponse(
-      `shopfront-geographic-sales-${Date.now()}.csv`,
+      `buyzen-geographic-sales-${Date.now()}.csv`,
       [...byDistrict.entries()].map(([district, revenue]) => ({
         district,
         revenue: (revenue / 100).toFixed(2),
