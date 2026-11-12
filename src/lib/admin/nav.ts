@@ -131,12 +131,6 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: "layout",
         permission: "cms.manage",
       },
-      {
-        href: "/admin/reports",
-        label: "Reports & exports",
-        icon: "download",
-        permission: "reports.view",
-      },
     ],
   },
   {

@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { ChatWidget } from "@/components/chat-widget";
 import { I18nProvider } from "@/components/i18n-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
@@ -30,14 +27,6 @@ export const metadata: Metadata = {
   },
   description:
     "ShopFront is a modern storefront for premium audio, wearables, computing, photography, home and gaming gear. Free shipping over $150 and 30-day returns.",
-  keywords: [
-    "ecommerce",
-    "online store",
-    "electronics",
-    "headphones",
-    "laptops",
-    "gaming",
-  ],
   openGraph: {
     title: "ShopFront — Premium tech, audio, gaming & home",
     description:
@@ -76,10 +65,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             currency={currency}
             usdToBdt={usdToBdtRate()}
           >
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-            <ChatWidget />
+            {children}
           </I18nProvider>
         </ThemeProvider>
       </body>
