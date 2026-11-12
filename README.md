@@ -172,21 +172,25 @@ Swap in your own studio shots any time by pointing the admin product form at the
 ```
 prisma/
   schema.prisma        # users, products, categories, carts, orders, reviews,
-                       # coupons, wishlist, subscribers
+                       # coupons, wishlist, subscribers, payments, refunds,
+                       # tickets, notifications, audit log, admin roles
   seed.mts             # demo data + generated SVG artwork in public/products
 src/
-  app/                 # App Router pages, layouts, route handlers
-    api/chat           # AI assistant endpoint (locale + currency aware)
-    api/search         # header search suggestions
-    api/webhooks/stripe# Stripe webhook (marks orders paid)
-  components/          # UI components (server + client)
+  app/
+    (shop)/            # storefront routes (header, footer, chat widget)
+    admin/             # admin console with its own shell and sidebar
+    api/               # chat, search, admin export + backup, stripe webhook
+  components/
+    admin/             # admin UI kit (tables, charts, cards, forms)
   lib/
     cart.ts            # cart persistence, totals, shipping/tax rules
     session.ts         # JWT session cookie helpers
+    permissions.ts     # roles + permission checks (server side)
     chatbot.ts         # assistant engine (local + OpenAI, EN + BN)
     currency.ts        # USD/BDT conversion helpers
     i18n/              # dictionaries (en/bn), server helpers, interpolation
     settings.ts        # locale / currency / theme cookie helpers
+    admin/             # analytics, customer, location and nav queries
     actions/           # server actions (auth, cart, checkout, reviews, admin, settings)
 scripts/               # playwright smoke tests + screenshot tools
 ```

@@ -110,6 +110,11 @@ Indexes were added for every field admins filter or sort by.
 `/admin/content`, `/admin/support`, `/admin/support/[id]`, `/admin/reviews`,
 `/admin/roles`, `/admin/reports`, `/admin/notifications`, `/admin/settings`
 
+**Route groups** — every storefront route lives in `src/app/(shop)` so the shop
+header, footer and chat widget are not rendered inside the admin console, which
+has its own shell (sticky header + grouped sidebar). The root layout owns only
+`html`/`body`, the providers and the pre-paint theme script.
+
 **API** — `/api/admin/export/[type]`, `/api/admin/backup`
 
 ---
