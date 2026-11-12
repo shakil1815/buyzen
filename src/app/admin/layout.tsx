@@ -5,8 +5,8 @@ import { Bell, LogOut } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getAdminContext, ROLE_LABELS, isAdminRole } from "@/lib/permissions";
 import { ADMIN_NAV, ADMIN_ICONS } from "@/lib/admin/nav";
-import { AdminIcon } from "@/components/admin/admin-icon";
 import { BrandMark } from "@/components/brand";
+import { AdminNav } from "@/components/admin/admin-nav";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -85,27 +85,7 @@ export default async function AdminLayout({
 
       <div className="container-page flex flex-col gap-6 py-6 lg:flex-row">
         <aside className="lg:w-60 lg:shrink-0">
-          <nav className="card p-3 lg:sticky lg:top-24">
-            {groups.map((group) => (
-              <div key={group.label} className="mb-3 last:mb-0">
-                <p className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-fg-subtle">
-                  {group.label}
-                </p>
-                <div className="space-y-0.5">
-                  {group.items.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-fg-muted transition hover:bg-surface-2 hover:text-fg-strong"
-                    >
-                      <AdminIcon path={ADMIN_ICONS[item.icon]} className="h-4 w-4" />
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </nav>
+          <AdminNav groups={groups} icons={ADMIN_ICONS} />
         </aside>
 
         <main className="min-w-0 flex-1 pb-16">{children}</main>
