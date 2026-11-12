@@ -8,7 +8,7 @@
  * coupon codes.
  */
 import { PrismaClient } from "@prisma/client";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const prisma = new PrismaClient();
@@ -551,6 +551,8 @@ function productSvg(
 
 async function main() {
   const publicDir = join(process.cwd(), "public", "products");
+const photoDir = join(publicDir, "photos");
+mkdirSync(photoDir, { recursive: true });
   mkdirSync(publicDir, { recursive: true });
 
   const createdCategories = new Map<string, string>();
@@ -596,6 +598,21 @@ async function main() {
         (_, variant) => `/products/${item.slug}-${variant + 1}.svg`,
       );
       const image = gallery[0];
+
+      // Prefer real photography that was already downloaded for this product.
+      const photoFiles = readdirSync(photoDir)
+        .filter(
+          (file) =>
+            file.startsWith(`${item.slug}-`) &&
+            /\.(jpg|jpeg|png|webp)$/i.test(file),
+        )
+        .sort();
+      if (photoFiles.length > 0) {
+        gallery.length = 0;
+        for (const file of photoFiles) {
+          gallery.push(`/products/photos/${file}`);
+        }
+      }
       for (const [variant] of gallery.entries()) {
         writeFileSync(
           join(publicDir, `${item.slug}-${variant + 1}.svg`),

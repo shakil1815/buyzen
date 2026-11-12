@@ -7,7 +7,7 @@
  * Images land in public/products/photos/<slug>.jpg and the attribution for each
  * file is written to public/products/photos/credits.json.
  */
-import { mkdirSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, unlinkSync, writeFileSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
@@ -277,6 +277,11 @@ function creditOf(page) {
 }
 
 async function download(url, destination) {
+  // Re-use an already downloaded file instead of hitting the network again.
+  if (existsSync(destination) && statSync(destination).size > 4000) {
+    return statSync(destination).size;
+  }
+
   for (let attempt = 0; attempt < 4; attempt += 1) {
     const response = await fetch(url, {
       headers: { "User-Agent": USER_AGENT },

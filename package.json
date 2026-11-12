@@ -13,7 +13,7 @@
     "db:generate": "prisma generate",
     "db:seed": "node prisma/seed.mts",
     "db:studio": "prisma studio",
-    "setup": "prisma migrate deploy && prisma generate && node prisma/seed.mts",
+    "setup": "prisma migrate deploy && prisma generate && node prisma/seed.mts && node scripts/relink-photos.mjs",
     "e2e": "node scripts/e2e.mjs",
     "e2e:account": "node scripts/e2e-account.mjs",
     "screenshots": "node scripts/screenshots.mjs",
@@ -28,7 +28,8 @@
     "e2e:admin-platform": "node scripts/e2e-admin-platform.mjs",
     "postinstall": "prisma generate",
     "db:postgres:prepare": "prisma migrate dev --name postgres_setup",
-    "db:reset": "node scripts/reset-db.mjs"
+    "db:reset": "node scripts/reset-db.mjs",
+    "relink:photos": "node scripts/relink-photos.mjs"
   },
   "prisma": {
     "seed": "node prisma/seed.mts"
