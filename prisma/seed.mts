@@ -597,8 +597,6 @@ mkdirSync(photoDir, { recursive: true });
         { length: 3 },
         (_, variant) => `/products/${item.slug}-${variant + 1}.svg`,
       );
-      const image = gallery[0];
-
       // Prefer real photography that was already downloaded for this product.
       const photoFiles = readdirSync(photoDir)
         .filter(
@@ -613,6 +611,7 @@ mkdirSync(photoDir, { recursive: true });
           gallery.push(`/products/photos/${file}`);
         }
       }
+      const image = gallery[0];
       for (const [variant] of gallery.entries()) {
         writeFileSync(
           join(publicDir, `${item.slug}-${variant + 1}.svg`),
