@@ -31,9 +31,6 @@
     "db:reset": "node scripts/reset-db.mjs",
     "relink:photos": "node scripts/relink-photos.mjs"
   },
-  "prisma": {
-    "seed": "node prisma/seed.mts"
-  },
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",

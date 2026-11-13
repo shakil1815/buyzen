@@ -21,14 +21,6 @@ import { categoryLabel, getDateLocale, getT } from "@/lib/i18n/server";
 import { getCurrency } from "@/lib/settings";
 import { usdToBdtRate } from "@/lib/currency";
 
-export async function generateStaticParams() {
-  const products = await prisma.product.findMany({
-    select: { slug: true },
-    take: 100,
-  });
-  return products.map((product) => ({ slug: product.slug }));
-}
-
 export async function generateMetadata(
   props: PageProps<"/products/[slug]">,
 ): Promise<Metadata> {
