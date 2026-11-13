@@ -101,7 +101,7 @@ export default async function HomePage() {
           aria-hidden
         />
 
-        <div className="container-page relative grid items-center gap-14 py-16 lg:grid-cols-2 lg:py-24">
+        <div className="container-page relative grid min-w-0 items-center gap-14 overflow-hidden py-12 sm:py-16 lg:grid-cols-2 lg:overflow-visible lg:py-24">
           <div>
             <span className="badge bg-white/10 text-brand-200 ring-1 ring-white/10">
               {t("home.hero.badge")}
@@ -145,9 +145,9 @@ export default async function HomePage() {
           </div>
 
           {heroProduct ? (
-            <div className="relative">
-              <div className="grid grid-cols-5 grid-rows-6 gap-4">
-                <div className="relative col-span-3 row-span-4 overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-lift">
+            <div className="relative min-w-0">
+              <div className="grid min-w-0 grid-cols-2 grid-rows-[repeat(6,minmax(0,1fr))] gap-3 sm:grid-cols-5 sm:grid-rows-6 sm:gap-4">
+                <div className="relative col-span-2 row-span-3 min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-lift sm:col-span-3 sm:row-span-4">
                   <Image
                     src={heroProduct.image}
                     alt={heroProduct.name}
@@ -160,10 +160,10 @@ export default async function HomePage() {
                 {featured.slice(1, 3).map((product, index) => (
                   <div
                     key={product.id}
-                    className={`relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 ${
+                    className={`relative min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-white/5 ${
                       index === 0
-                        ? "col-span-2 row-span-3"
-                        : "col-span-2 row-span-2"
+                        ? "col-span-1 row-span-2 sm:col-span-2 sm:row-span-3"
+                        : "col-span-1 row-span-2 sm:col-span-2 sm:row-span-2"
                     }`}
                   >
                     <Image
@@ -175,7 +175,7 @@ export default async function HomePage() {
                     />
                   </div>
                 ))}
-                <div className="col-span-3 row-span-2 flex flex-col justify-center rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <div className="col-span-2 row-span-1 flex min-w-0 flex-col justify-center rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur sm:col-span-3 sm:row-span-2 sm:p-5">
                   <p className="text-xs uppercase tracking-wide text-ink-400">
                     {t("home.hero.staffPick")}
                   </p>
