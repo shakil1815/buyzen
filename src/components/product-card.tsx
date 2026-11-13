@@ -37,7 +37,7 @@ export async function ProductCard({
   const off = discountPercent(product.price, product.compareAtPrice);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-lift">
+    <article className="group flex min-w-0 h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-lift">
       <div className="relative aspect-square overflow-hidden bg-surface-2">
         <Link
           href={`/products/${product.slug}`}

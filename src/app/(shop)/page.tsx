@@ -276,7 +276,7 @@ export default async function HomePage() {
             linkLabel={t("common.seeAll")}
           />
 
-          <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="mt-8 grid min-w-0 grid-cols-2 gap-4 lg:grid-cols-4">
             {featured.slice(0, 8).map((product, index) => (
               <ProductCard
                 key={product.id}
@@ -312,8 +312,8 @@ export default async function HomePage() {
       ) : null}
 
       {/* Top rated + new */}
-      <section className="container-page grid gap-14 pb-16 lg:grid-cols-2">
-        <div>
+      <section className="container-page grid min-w-0 gap-14 pb-16 lg:grid-cols-2">
+        <div className="min-w-0">
           <h2 className="text-2xl font-black tracking-tight text-fg-strong">
             {t("home.topRated.title")}
           </h2>
@@ -325,7 +325,7 @@ export default async function HomePage() {
               <Link
                 key={product.id}
                 href={`/products/${product.slug}`}
-                className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-3 transition hover:border-brand-200 hover:shadow-soft"
+                className="flex min-w-0 items-center gap-4 rounded-2xl border border-line bg-surface p-3 transition hover:border-brand-200 hover:shadow-soft"
               >
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface-2">
                   <Image
@@ -353,12 +353,12 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <h2 className="text-2xl font-black tracking-tight text-fg-strong">
             {t("home.new.title")}
           </h2>
           <p className="mt-1.5 text-sm text-fg-muted">{t("home.new.body")}</p>
-          <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="mt-6 grid min-w-0 grid-cols-2 gap-4">
             {newest.map((product) => (
               <ProductCard
                 key={product.id}
