@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Flame } from "lucide-react";
 import { RatingStars } from "@/components/rating-stars";
@@ -8,6 +7,7 @@ import { discountPercent, formatMoney } from "@/lib/format";
 import { categoryLabel, getT } from "@/lib/i18n/server";
 import { getCurrency } from "@/lib/settings";
 import { usdToBdtRate } from "@/lib/currency";
+import { ProductImage } from "@/components/product-image";
 
 export type ProductCardData = {
   id: string;
@@ -43,13 +43,13 @@ export async function ProductCard({
           href={`/products/${product.slug}`}
           className="relative block h-full w-full"
         >
-          <Image
+          <ProductImage
             src={product.image}
             alt={product.name}
             fill
             priority={priority}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain p-3 transition duration-300 group-hover:scale-[1.04]"
+            className="object-contain p-2 transition duration-300 group-hover:scale-[1.04] sm:p-3"
           />
         </Link>
 
@@ -79,13 +79,13 @@ export async function ProductCard({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-3 sm:gap-2 sm:p-4">
         <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-fg-subtle">
           <span>{categoryLabel(t, product.category.slug, product.category.name)}</span>
           {product.brand ? <span>{product.brand}</span> : null}
         </div>
 
-        <h3 className="text-sm font-semibold leading-snug text-fg">
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-fg">
           <Link href={`/products/${product.slug}`} className="hover:text-brand-fg">
             {product.name}
           </Link>
@@ -93,9 +93,9 @@ export async function ProductCard({
 
         <RatingStars rating={product.rating} count={product.reviewCount} />
 
-        <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+        <div className="mt-auto flex items-end justify-between gap-1 pt-2 sm:gap-2">
           <div>
-            <p className="text-lg font-bold tracking-tight text-fg-strong">
+            <p className="text-base font-bold tracking-tight text-fg-strong sm:text-lg">
               {formatMoney(product.price, currency, rate)}
             </p>
             {product.compareAtPrice && product.compareAtPrice > product.price ? (

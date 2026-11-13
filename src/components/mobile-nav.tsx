@@ -18,7 +18,7 @@ export function MobileNav({
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="rounded-lg p-2 text-fg transition hover:bg-surface-3"
+        className="grid h-10 w-10 place-items-center rounded-lg text-fg transition hover:bg-surface-3"
         aria-label={open ? t("nav.closeMenu") : t("nav.openMenu")}
         aria-expanded={open}
       >
@@ -26,7 +26,7 @@ export function MobileNav({
       </button>
 
       {open ? (
-        <div className="fixed inset-x-0 top-[100px] z-40 max-h-[70vh] overflow-y-auto border-b border-line bg-surface p-4 shadow-lift">
+        <div className="fixed inset-x-0 top-[9.75rem] z-40 max-h-[calc(100vh-10rem)] overflow-y-auto border-b border-line bg-surface p-4 shadow-lift sm:top-[9.5rem]">
           <nav className="grid gap-1">
             <Link
               href="/products"

@@ -1,13 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { removeItemAction, updateItemAction } from "@/lib/actions/cart";
 import { formatMoney } from "@/lib/format";
 import { useI18n } from "@/components/i18n-provider";
+import { ProductImage } from "@/components/product-image";
 
 export function CartLineItem({
   item,
@@ -50,17 +50,17 @@ export function CartLineItem({
         href={`/products/${item.product.slug}`}
         className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-surface-2"
       >
-        <Image
+        <ProductImage
           src={item.product.image}
           alt={item.product.name}
           fill
           sizes="96px"
-          className="object-cover"
+          className="object-contain p-1.5"
         />
       </Link>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
           <Link
             href={`/products/${item.product.slug}`}
             className="text-sm font-semibold text-fg hover:text-brand-fg"
@@ -78,7 +78,7 @@ export function CartLineItem({
           })}
         </p>
 
-        <div className="mt-auto flex items-center justify-between pt-3">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-3">
           <div className="flex items-center rounded-lg border border-line-strong">
             <button
               type="button"

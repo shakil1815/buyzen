@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { ProductImage } from "@/components/product-image";
 
 export function ProductGallery({
   images,
@@ -16,13 +16,13 @@ export function ProductGallery({
   return (
     <div className="grid gap-4">
       <div className="relative aspect-square overflow-hidden rounded-2xl border border-line bg-surface-2">
-        <Image
+        <ProductImage
           src={list[active]}
           alt={alt}
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 45vw"
-          className="object-contain p-4"
+          className="object-contain p-3 sm:p-4"
         />
       </div>
       {list.length > 1 ? (
@@ -32,14 +32,14 @@ export function ProductGallery({
               key={`${image}-${index}`}
               type="button"
               onClick={() => setActive(index)}
-              className={`relative h-20 w-20 overflow-hidden rounded-xl border transition ${
+              className={`relative h-16 w-16 overflow-hidden rounded-xl border transition sm:h-20 sm:w-20 ${
                 active === index
                   ? "border-brand-600 ring-2 ring-brand-200"
                   : "border-line hover:border-line-strong"
               }`}
               aria-label={`View image ${index + 1}`}
             >
-              <Image
+              <ProductImage
                 src={image}
                 alt=""
                 fill

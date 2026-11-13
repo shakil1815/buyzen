@@ -638,8 +638,9 @@ mkdirSync(photoDir, { recursive: true });
           categoryId,
           reviewCount,
           rating,
-          // `image` / `gallery` are intentionally left untouched so that
-          // real product photos (npm run fetch:photos) survive a re-seed.
+          ...(photoFiles.length > 0
+            ? { image, gallery: JSON.stringify(gallery) }
+            : {}),
         },
         create: {
           name: item.name,
